@@ -4,6 +4,13 @@
   "description": "A Node Module to detect device type and orientation with SSR-safe guards and throttled resize listeners.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.esm.js"
+    }
+  },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "clean": "rimraf dist",
@@ -29,9 +36,6 @@
   ],
   "author": "Valentin Röhle",
   "license": "MIT",
-  "files": [
-    "dist/types/index.d.ts"
-  ],
   "bugs": {
     "url": "https://github.com/EinfachValle/device-type-detection/issues"
   },
