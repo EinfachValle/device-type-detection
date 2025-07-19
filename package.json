@@ -15,7 +15,7 @@
     "./dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --out-dir dist --no-dts-resolve",
+    "build": "tsup",
     "clean": "rimraf dist",
     "lint": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss}",
@@ -45,6 +45,12 @@
     "url": "https://github.com/EinfachValle/device-type-detection/issues"
   },
   "homepage": "https://github.com/EinfachValle/device-type-detection#readme",
+  "peerDependencies": {
+    "lodash": "^4.17.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-device-detect": "^2.2.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -71,12 +77,6 @@
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
-  },
-  "peerDependencies": {
-    "lodash": "^4.17.0",
-    "react": "^18.0.0 || ^19.0.0",
-    "react-device-detect": "^2.2.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   }
 }

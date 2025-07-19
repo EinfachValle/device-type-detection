@@ -2,10 +2,7 @@
 
 A tiny React hook in form of node module to detect device type and orientation in browsers. It supports mobile, tablet, desktop, TV, and 4K screens, exposing granular breakpoints and orientation flags.
 
-<!-- Badges -->
-
-[![npm version](https://img.shields.io/npm/v/device-type-detection.svg)](https://www.npmjs.com/package/device-type-detection)  
-[![build status](https://img.shields.io/github/actions/workflow/status/EinfachValle/device-type-detection/ci.yml)](https://github.com/EinfachValle/device-type-detection/actions)
+[![npm version](https://img.shields.io/npm/v/device-type-detection.svg)](https://www.npmjs.com/package/device-type-detection)
 
 ## Features
 
@@ -14,6 +11,33 @@ A tiny React hook in form of node module to detect device type and orientation i
 - Touch detection via `navigator.maxTouchPoints` and `react-device-detect`
 - Throttled resize listener for performance
 - Full TypeScript support with declaration files
+
+## Peer Dependencies
+
+This package relies on the following peer dependencies. Make sure they are installed in your project:
+
+- [react](https://www.npmjs.com/package/react)
+- [react-dom](https://www.npmjs.com/package/react-dom)
+- [lodash](https://www.npmjs.com/package/lodash)
+- [react-device-detect](https://www.npmjs.com/package/react-device-detect)
+
+<details>
+<summary>With NPM</summary>
+
+```bash
+npm install react react-dom lodash react-device-detect
+```
+
+</details>
+
+<details>
+<summary>With Yarn</summary>
+
+```bash
+yarn add react react-dom lodash react-device-detect
+```
+
+</details>
 
 ## Installation
 
