@@ -8,7 +8,9 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "clean": "rimraf dist",
     "lint": "eslint 'src/**/*.{ts,tsx}' --fix",
-    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss}"
+    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss}",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -34,12 +36,22 @@
     "url": "https://github.com/EinfachValle/device-type-detection/issues"
   },
   "homepage": "https://github.com/EinfachValle/device-type-detection#readme",
+  "dependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "lodash": "^4.17.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-device-detect": "^2.2.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
   "devDependencies": {
+    "@testing-library/react": "^16.3.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.15",
     "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/react-test-renderer": "^19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "eslint": "^9.31.0",
@@ -47,11 +59,19 @@
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-react": "^7.37.5",
     "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
     "prettier": "^3.6.2",
+    "react-test-renderer": "^19.1.0",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "lodash": "^4.17.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-device-detect": "^2.2.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   }
 }
