@@ -1,6 +1,6 @@
 {
   "name": "device-type-detection",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node Module to detect device type and orientation with SSR-safe guards and throttled resize listeners.",
   "type": "module",
   "main": "./dist/index.js",
