@@ -2,22 +2,27 @@
   "name": "device-type-detection",
   "version": "1.0.0",
   "description": "A Node Module to detect device type and orientation with SSR-safe guards and throttled resize listeners.",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.cjs.js",
-      "import": "./dist/index.esm.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
+  "files": [
+    "./dist"
+  ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --out-dir dist --no-dts-resolve",
     "clean": "rimraf dist",
     "lint": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss}",
     "test": "jest --passWithNoTests",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "prepack": "npm run clean && npm run build && rimraf device-type-detection-1.0.0.tgz",
+    "pack": "npm pack"
   },
   "repository": {
     "type": "git",
@@ -40,14 +45,8 @@
     "url": "https://github.com/EinfachValle/device-type-detection/issues"
   },
   "homepage": "https://github.com/EinfachValle/device-type-detection#readme",
-  "dependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "lodash": "^4.17.0",
-    "react": "^18.0.0 || ^19.0.0",
-    "react-device-detect": "^2.2.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
-  },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/jest": "^30.0.0",
@@ -70,7 +69,9 @@
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependencies": {
     "lodash": "^4.17.0",
