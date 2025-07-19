@@ -1,0 +1,30 @@
+# Directories with generated or external files
+/node_modules/
+/build/
+/dist/
+dist/
+/.storybook/
+/keys/
+/public/manifest.json
+
+# Minimized files
+*.min.js
+*.min.css
+
+# Configuration files that may require special formatting
+/.env
+/docker-compose.yml
+
+# Logs
+*.log
+
+# Cache files
+.cache/
+.npm/
+
+# Other files that are not changed frequently or require special formatting
+/package-lock.json
+/yarn.lock
+
+# Git directory
+/.git/

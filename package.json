@@ -1,0 +1,57 @@
+{
+  "name": "device-type-detection",
+  "version": "1.0.0",
+  "description": "A Node Module to detect device type and orientation with SSR-safe guards and throttled resize listeners.",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "clean": "rimraf dist",
+    "lint": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss}"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EinfachValle/device-type-detection.git"
+  },
+  "keywords": [
+    "device",
+    "type",
+    "detection",
+    "responsive",
+    "ssr",
+    "throttle",
+    "resize",
+    "listener",
+    "typescript"
+  ],
+  "author": "Valentin Röhle",
+  "license": "MIT",
+  "files": [
+    "dist/types/index.d.ts"
+  ],
+  "bugs": {
+    "url": "https://github.com/EinfachValle/device-type-detection/issues"
+  },
+  "homepage": "https://github.com/EinfachValle/device-type-detection#readme",
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/jest": "^30.0.0",
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^24.0.15",
+    "@types/react": "^19.1.8",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "eslint-plugin-react": "^7.37.5",
+    "jest": "^30.0.4",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}
