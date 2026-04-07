@@ -3,6 +3,9 @@
 Framework-agnostic device type detection with live resize, SSR support, and zero dependencies.
 
 [![npm version](https://img.shields.io/npm/v/device-type-detection.svg)](https://www.npmjs.com/package/device-type-detection)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://einfachvalle.github.io/device-type-detection/)
+
+**[Interactive Demo](https://einfachvalle.github.io/device-type-detection/)** — try device presets, drag to resize, see detection in real-time.
 
 ## Features
 
@@ -256,7 +259,7 @@ Interactive demo with device presets, drag-to-resize, and live detection:
 npm run playground
 ```
 
-Opens at http://localhost:5173. Also deployed to GitHub Pages.
+Opens at <http://localhost:5173>. Also deployed to GitHub Pages.
 
 ## License
 
