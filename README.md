@@ -1,168 +1,272 @@
 # device-type-detection
 
-A tiny React hook in form of node module to detect device type and orientation in browsers. It supports mobile, tablet, desktop, TV, and 4K screens, exposing granular breakpoints and orientation flags.
+Framework-agnostic device type detection with live resize, SSR support, and zero dependencies.
 
 [![npm version](https://img.shields.io/npm/v/device-type-detection.svg)](https://www.npmjs.com/package/device-type-detection)
 
 ## Features
 
-- Detects **mobile** (small/medium/large), **tablet** (small/medium/large), **laptop**, **desktop**, **TV**, and **4K TV**
-- Provides **portrait** vs. **landscape** orientation
-- Touch detection via `navigator.maxTouchPoints` and `react-device-detect`
-- Throttled resize listener for performance
-- Full TypeScript support with declaration files
-
-## Peer Dependencies
-
-This package relies on the following peer dependencies. Make sure they are installed in your project:
-
-- [react](https://www.npmjs.com/package/react)
-- [react-dom](https://www.npmjs.com/package/react-dom)
-- [lodash](https://www.npmjs.com/package/lodash)
-- [react-device-detect](https://www.npmjs.com/package/react-device-detect)
-
-<details>
-<summary>With NPM</summary>
-
-```bash
-npm install react react-dom lodash react-device-detect
-```
-
-</details>
-
-<details>
-<summary>With Yarn</summary>
-
-```bash
-yarn add react react-dom lodash react-device-detect
-```
-
-</details>
+- **Zero dependencies** — no React, no lodash, no runtime bloat
+- **Framework-agnostic** — works with vanilla JS, React, Vue, Svelte, or anything else
+- **Live resize** — device type updates instantly when the viewport changes, no reload needed
+- **10 device categories** — mobile (S/M/L), tablet (S/M/L), laptop, desktop, TV, 4K TV
+- **Orientation detection** — portrait/landscape with combined flags (e.g. `isMobileVertical`)
+- **UA + viewport detection** — combines User-Agent parsing with viewport measurements
+- **SSR-safe** — returns sensible defaults in server environments
+- **Configurable breakpoints** — override any breakpoint threshold
+- **Tiny** — ~9 KB ESM, ~10 KB CJS (uncompressed)
+- **TypeScript** — full type definitions included
 
 ## Installation
-
-<details>
-<summary>With NPM</summary>
 
 ```bash
 npm install device-type-detection
 ```
 
-</details>
-
-<details>
-<summary>With Yarn</summary>
-
-```bash
-yarn add device-type-detection
-```
-
-</details>
-
 ## Quick Start
 
+```typescript
+import { createDeviceDetector } from "device-type-detection";
+
+const detector = createDeviceDetector();
+
+// Read current state
+const state = detector.getState();
+console.log(state.deviceType); // 'desktop', 'mobile_l', 'tablet_m', etc.
+console.log(state.isMobile); // true/false
+console.log(state.orientation); // 'portrait' | 'landscape'
+
+// Subscribe to live changes
+const unsubscribe = detector.subscribe((state, prev) => {
+  console.log(`Changed: ${prev.deviceType} → ${state.deviceType}`);
+});
+
+// Clean up when done
+unsubscribe();
+detector.destroy();
+```
+
+## Framework Integration
+
+The store-based API works with any framework in a few lines:
+
+### React
+
 ```tsx
-import React from "react";
+import { useRef, useSyncExternalStore } from "react";
 
-import { useDeviceTypeDetection } from "device-type-detection";
+import { createDeviceDetector } from "device-type-detection";
 
-const App: React.FC = () => {
-  const {
-    deviceType,
-    orientation,
-    isMobile,
-    isTablet,
-    isDesktop,
-    isTV,
-    isPortrait,
-    isLandscape,
-    // ...many more flags
-  } = useDeviceTypeDetection();
+function useDeviceDetection() {
+  const store = useRef(createDeviceDetector()).current;
+  return useSyncExternalStore(
+    (cb) => store.subscribe(cb),
+    () => store.getState(),
+  );
+}
 
+function App() {
+  const { isMobile, deviceType, orientation } = useDeviceDetection();
   return (
     <div>
-      <p>
-        Device: <strong>{deviceType}</strong>
-      </p>
-      <p>
-        Orientation: <strong>{orientation}</strong>
-      </p>
-      {isMobile && <p>This is a mobile device.</p>}
+      {isMobile ? "Mobile" : deviceType} — {orientation}
     </div>
   );
-};
+}
+```
 
-export default App;
+### Vue
+
+```vue
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
+import { createDeviceDetector } from 'device-type-detection';
+
+const state = ref(null);
+let detector;
+
+onMounted(() => {
+  detector = createDeviceDetector();
+  state.value = detector.getState();
+  detector.subscribe((s) => { state.value = s; });
+});
+
+onUnmounted(() => detector?.destroy());
+</script>
+
+<template>
+  <div v-if="state">{{ state.deviceType }} — {{ state.orientation }}</div>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script>
+  import { createDeviceDetector } from 'device-type-detection';
+  import { readable } from 'svelte/store';
+
+  const device = readable(null, (set) => {
+    const store = createDeviceDetector();
+    set(store.getState());
+    const unsub = store.subscribe((s) => set(s));
+    return () => { unsub(); store.destroy(); };
+  });
+</script>
+
+{#if $device}
+  <p>{$device.deviceType} — {$device.orientation}</p>
+{/if}
 ```
 
 ## API
 
-### `useDeviceTypeDetection()`
+### `createDeviceDetector(options?)`
 
-Returns a `DeviceDetectionResult` object with the following properties:
+Creates a detector instance. Returns a `DeviceStore`:
 
-| Property             | Type                        | Description                                                                    |
-| -------------------- | --------------------------- | ------------------------------------------------------------------------------ |
-| `deviceType`         | `string`                    | One of the `DEVICE_TYPE` enum values with `_VERTICAL` or `_HORIZONTAL` suffix. |
-| `touchDevice`        | `boolean`                   | True if the device supports touch (maxTouchPoints > 0).                        |
-| `isPortrait`         | `boolean`                   | True if viewport height > width.                                               |
-| `isLandscape`        | `boolean`                   | True if viewport width > height.                                               |
-| `orientation`        | `'portrait' \| 'landscape'` | Shorthand for portrait vs. landscape.                                          |
-| `isMobile`           | `boolean`                   | Device is any mobile (`MOBILE_S`, `MOBILE_M`, `MOBILE_L`).                     |
-| `isTablet`           | `boolean`                   | Device is any tablet (`TABLET_S`, `TABLET_M`, `TABLET_L`).                     |
-| `isMobileVertical`   | `boolean`                   | Mobile and portrait orientation.                                               |
-| `isMobileHorizontal` | `boolean`                   | Mobile and landscape orientation.                                              |
-| `isTabletVertical`   | `boolean`                   | Tablet and portrait orientation.                                               |
-| `isTabletHorizontal` | `boolean`                   | Tablet and landscape orientation.                                              |
-| `isMobileS`          | `boolean`                   | Exactly small mobile (`MOBILE_S`).                                             |
-| `isMobileM`          | `boolean`                   | Exactly medium mobile (`MOBILE_M`).                                            |
-| `isMobileL`          | `boolean`                   | Exactly large mobile (`MOBILE_L`).                                             |
-| `isTabletS`          | `boolean`                   | Exactly small tablet (`TABLET_S`).                                             |
-| `isTabletM`          | `boolean`                   | Exactly medium tablet (`TABLET_M`).                                            |
-| `isTabletL`          | `boolean`                   | Exactly large tablet (`TABLET_L`).                                             |
-| `isLaptop`           | `boolean`                   | Exactly laptop (`LAPTOP`).                                                     |
-| `isDesktop`          | `boolean`                   | Any desktop (`DESKTOP`).                                                       |
-| `isTV`               | `boolean`                   | Exactly TV (`TV`).                                                             |
-| `isTV4K`             | `boolean`                   | Exactly 4K TV (`TV_4K`).                                                       |
-
-Also export:
-
-```ts
-export enum DEVICE_TYPE {
-  MOBILE_S,
-  MOBILE_M,
-  MOBILE_L,
-  TABLET_S,
-  TABLET_M,
-  TABLET_L,
-  LAPTOP,
-  DESKTOP,
-  TV,
-  TV_4K,
+```typescript
+interface DeviceStore {
+  getState(): DeviceState;
+  subscribe(
+    listener: (state: DeviceState, prev: DeviceState) => void,
+  ): () => void;
+  destroy(): void;
 }
-
-export const BREAKPOINTS = {
-  MOBILE_S_MAX_WIDTH: number,
-  MOBILE_MAX_WIDTH: number,
-  TABLET_S_MAX_WIDTH: number,
-  TABLET_M_MAX_WIDTH: number,
-  TABLET_L_MAX_WIDTH: number,
-  LAPTOP_MAX_WIDTH: number,
-  DESKTOP_MAX_WIDTH: number,
-  TV_MAX_WIDTH: number,
-};
 ```
 
-## Contributing
+### Options
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feat/your-feature`)
-3. Commit your changes (`git commit -m "feat: add ..."`)
-4. Push to your branch (`git push origin feat/your-feature`)
-5. Open a Pull Request
+```typescript
+interface DetectorOptions {
+  breakpoints?: Partial<BreakpointConfig>; // Override individual breakpoints
+  throttleMs?: number; // Resize throttle (default: 150)
+  ssrDeviceType?: DeviceCategory; // SSR default (default: 'desktop')
+}
+```
 
-Please follow the [Conventional Commits](https://www.conventionalcommits.org/) standard.
+### `DeviceState`
+
+| Property             | Type             | Description                                                                                                                                      |
+| -------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `deviceType`         | `DeviceCategory` | `'mobile_s'` \| `'mobile_m'` \| `'mobile_l'` \| `'tablet_s'` \| `'tablet_m'` \| `'tablet_l'` \| `'laptop'` \| `'desktop'` \| `'tv'` \| `'tv_4k'` |
+| `orientation`        | `Orientation`    | `'portrait'` \| `'landscape'`                                                                                                                    |
+| `touchDevice`        | `boolean`        | `navigator.maxTouchPoints > 0`                                                                                                                   |
+| `width`              | `number`         | Current viewport width                                                                                                                           |
+| `height`             | `number`         | Current viewport height                                                                                                                          |
+| `isMobile`           | `boolean`        | Any mobile device                                                                                                                                |
+| `isMobileS`          | `boolean`        | Small mobile (width <= 380)                                                                                                                      |
+| `isMobileM`          | `boolean`        | Medium mobile (width <= 480)                                                                                                                     |
+| `isMobileL`          | `boolean`        | Large mobile (width > 480, UA mobile)                                                                                                            |
+| `isTablet`           | `boolean`        | Any tablet device                                                                                                                                |
+| `isTabletS`          | `boolean`        | Small tablet (width <= 834)                                                                                                                      |
+| `isTabletM`          | `boolean`        | Medium tablet (width <= 1024)                                                                                                                    |
+| `isTabletL`          | `boolean`        | Large tablet (width > 1024)                                                                                                                      |
+| `isLaptop`           | `boolean`        | Laptop (1367–1400)                                                                                                                               |
+| `isDesktop`          | `boolean`        | Desktop (1401–1920)                                                                                                                              |
+| `isTV`               | `boolean`        | TV (1921–3840)                                                                                                                                   |
+| `isTV4K`             | `boolean`        | 4K TV (> 3840)                                                                                                                                   |
+| `isPortrait`         | `boolean`        | Height > width                                                                                                                                   |
+| `isLandscape`        | `boolean`        | Width >= height                                                                                                                                  |
+| `isMobileVertical`   | `boolean`        | Mobile + portrait                                                                                                                                |
+| `isMobileHorizontal` | `boolean`        | Mobile + landscape                                                                                                                               |
+| `isTabletVertical`   | `boolean`        | Tablet + portrait                                                                                                                                |
+| `isTabletHorizontal` | `boolean`        | Tablet + landscape                                                                                                                               |
+
+### Default Breakpoints
+
+| Breakpoint | Width (px) |
+| ---------- | ---------- |
+| `mobileS`  | 380        |
+| `mobileM`  | 480        |
+| `tabletS`  | 834        |
+| `tabletM`  | 1024       |
+| `tabletL`  | 1366       |
+| `laptop`   | 1400       |
+| `desktop`  | 1920       |
+| `tv`       | 3840       |
+
+### Custom Breakpoints
+
+```typescript
+const detector = createDeviceDetector({
+  breakpoints: {
+    mobileS: 320,
+    desktop: 1600,
+  },
+});
+```
+
+### Pure Detection Function
+
+For advanced use cases, you can use the detection function directly without any browser dependencies:
+
+```typescript
+import { detectDeviceType } from "device-type-detection";
+
+const state = detectDeviceType({
+  width: 1024,
+  height: 768,
+  uaMobile: false,
+  uaTablet: true,
+  uaIPad: false,
+  touchCapable: true,
+  breakpoints: DEFAULT_BREAKPOINTS,
+});
+```
+
+### SSR
+
+```typescript
+import {
+  createDeviceDetector,
+  getSSRDefaults,
+  isSSR,
+} from "device-type-detection";
+
+// Option A: Factory handles SSR automatically
+const detector = createDeviceDetector({ ssrDeviceType: "mobile_s" });
+
+// Option B: Manual SSR defaults
+if (isSSR()) {
+  const state = getSSRDefaults("mobile_s");
+}
+```
+
+## Detection Logic
+
+1. **UA-based mobile** — User-Agent says mobile + touch + not iPad → `mobile_s` / `mobile_m` / `mobile_l` by width
+2. **UA-based tablet** — User-Agent says tablet or iPad + touch → `tablet_s` / `tablet_m` / `tablet_l` by width
+3. **Viewport cascade** — Otherwise: `tv_4k` > `tv` > `desktop` > `laptop` > `tablet_l` > `tablet_m` > `tablet_s` > `mobile_m` > `mobile_s`
+
+## Development
+
+```bash
+npm install
+npm run build        # Build ESM + CJS + types
+npm test             # Unit tests (Jest)
+npm run test:e2e     # E2E tests (Playwright)
+```
+
+### Playgrounds
+
+**Vanilla JS** — single HTML file, no build step:
+
+```bash
+npm run build                 # build the library first
+cd playground/vanilla
+npm start                     # serves on http://localhost:3000
+```
+
+**React** — Vite + React project:
+
+```bash
+npm run build                 # build the library first
+cd playground/react
+npm install
+npm run dev                   # Vite dev server
+```
 
 ## License
 
-MIT © Valentin Röhle
+MIT

@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "name": "playground-vanilla",
+  "scripts": {
+    "start": "npx serve ../.. -l 3000 --no-clipboard -o /playground/vanilla"
+  }
+}

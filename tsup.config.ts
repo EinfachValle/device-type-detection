@@ -7,5 +7,4 @@ export default defineConfig({
   outDir: "dist",
   clean: true,
   splitting: false,
-  external: ["react", "react-dom", "lodash", "react-device-detect"],
 });

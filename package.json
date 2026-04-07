@@ -1,28 +1,37 @@
 {
   "name": "device-type-detection",
-  "version": "1.0.1",
-  "description": "A Node Module to detect device type and orientation with SSR-safe guards and throttled resize listeners.",
+  "version": "2.0.0",
+  "description": "Framework-agnostic device type detection with live resize, SSR support, and zero dependencies.",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
-    "./dist"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
-    "lint": "eslint 'src/**/*.{ts,tsx}' --fix",
-    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,scss}",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"playground/react/src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"e2e/**/*.ts\" \"playground/react/src/**/*.{ts,tsx}\" \"*.ts\" \"*.json\" jest.polyfills.ts jest.config.cjs",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "prepack": "npm run clean && npm run build && rimraf device-type-detection-1.0.0.tgz",
-    "pack": "npm pack"
+    "test:e2e": "playwright test",
+    "playground:vanilla": "npm run build && npm start --prefix playground/vanilla",
+    "playground:react": "npm run build && cd playground/react && npm install && npm run dev",
+    "prepack": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
@@ -30,14 +39,17 @@
   },
   "keywords": [
     "device",
-    "type",
     "detection",
     "responsive",
-    "ssr",
-    "throttle",
     "resize",
-    "listener",
-    "typescript"
+    "breakpoints",
+    "mobile",
+    "tablet",
+    "desktop",
+    "ssr",
+    "framework-agnostic",
+    "typescript",
+    "zero-dependencies"
   ],
   "author": "Valentin Röhle",
   "license": "MIT",
@@ -45,38 +57,25 @@
     "url": "https://github.com/EinfachValle/device-type-detection/issues"
   },
   "homepage": "https://github.com/EinfachValle/device-type-detection#readme",
-  "peerDependencies": {
-    "lodash": "^4.17.0",
-    "react": "^18.0.0 || ^19.0.0",
-    "react-device-detect": "^2.2.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
-  },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/jest": "^30.0.0",
-    "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.15",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@types/react-test-renderer": "^19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
-    "eslint-plugin-react": "^7.37.5",
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.4",
     "prettier": "^3.6.2",
-    "react-test-renderer": "^19.1.0",
     "rimraf": "^6.0.1",
+    "serve": "^14.2.6",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "typescript": "^5.8.3"
   }
 }
