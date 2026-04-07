@@ -24,13 +24,12 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
-    "lint": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"playground/react/src/**/*.{ts,tsx}\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"e2e/**/*.ts\" \"playground/react/src/**/*.{ts,tsx}\" \"*.ts\" \"*.json\" jest.polyfills.ts jest.config.cjs",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"playground/src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"e2e/**/*.ts\" \"playground/src/**/*.{ts,tsx}\" \"*.ts\" \"*.json\" jest.polyfills.ts jest.config.cjs",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
-    "playground:vanilla": "npm run build && npm start --prefix playground/vanilla",
-    "playground:react": "npm run build && cd playground/react && npm install && npm run dev",
+    "playground": "npm run build && cd playground && npm install && npm run dev",
     "prepack": "npm run clean && npm run build"
   },
   "repository": {

@@ -248,24 +248,15 @@ npm test             # Unit tests (Jest)
 npm run test:e2e     # E2E tests (Playwright)
 ```
 
-### Playgrounds
+### Playground
 
-**Vanilla JS** — single HTML file, no build step:
-
-```bash
-npm run build                 # build the library first
-cd playground/vanilla
-npm start                     # serves on http://localhost:3000
-```
-
-**React** — Vite + React project:
+Interactive demo with device presets, drag-to-resize, and live detection:
 
 ```bash
-npm run build                 # build the library first
-cd playground/react
-npm install
-npm run dev                   # Vite dev server
+npm run playground
 ```
+
+Opens at http://localhost:5173. Also deployed to GitHub Pages.
 
 ## License
 

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo App</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #fafafa;
+      --text: #1a1a2e;
+      --text-muted: #5a5a7a;
+      --card-text: #fff;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --hero-from: #651fff;
+      --hero-to: #b388ff;
+    }
+
+    :root.dark {
+      --bg: #1a1a2e;
+      --text: #e2e2f0;
+      --text-muted: #9a9abb;
+      --card-shadow: rgba(0, 0, 0, 0.35);
+      --hero-from: #4527a0;
+      --hero-to: #7c4dff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
+      color: #fff;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin-top: 0.35rem;
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+
+    /* Card grid — adapts from 1 to 6 columns */
+    .grid {
+      display: grid;
+      gap: 1rem;
+      padding: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 481px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 835px) {
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (min-width: 1401px) {
+      .grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; padding: 2rem; }
+    }
+
+    @media (min-width: 1921px) {
+      .grid { grid-template-columns: repeat(5, 1fr); gap: 1.5rem; padding: 2.5rem; }
+    }
+
+    @media (min-width: 3000px) {
+      .grid { grid-template-columns: repeat(6, 1fr); gap: 2rem; padding: 3rem; }
+    }
+
+    /* Tiny screens — tighter spacing */
+    @media (max-width: 380px) {
+      .grid { gap: 0.6rem; padding: 0.75rem; }
+      .hero { padding: 1.5rem 1rem; }
+      .hero h1 { font-size: 1.25rem; }
+      .card { padding: 1rem; }
+      .card h2 { font-size: 0.95rem; }
+      .card p { font-size: 0.75rem; }
+    }
+
+    /* Large screens — bigger cards */
+    @media (min-width: 1921px) {
+      .hero { padding: 3.5rem 2rem; }
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1.2rem; }
+      .card { padding: 2rem; border-radius: 1.25rem; }
+      .card h2 { font-size: 1.4rem; }
+      .card p { font-size: 1rem; }
+    }
+
+    /* Cards */
+    .card {
+      border-radius: 1rem;
+      padding: 1.5rem;
+      color: var(--card-text);
+      box-shadow: 0 4px 14px var(--card-shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px var(--card-shadow);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.875rem;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    .card--orange  { background: linear-gradient(135deg, #f97316, #fb923c); }
+    .card--green   { background: linear-gradient(135deg, #22c55e, #4ade80); }
+    .card--purple  { background: linear-gradient(135deg, #a855f7, #c084fc); }
+    .card--blue    { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+    .card--pink    { background: linear-gradient(135deg, #ec4899, #f472b6); }
+    .card--teal    { background: linear-gradient(135deg, #14b8a6, #2dd4bf); }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Demo App</h1>
+    <p>Responsive Card Layout</p>
+  </header>
+
+  <main class="grid">
+    <div class="card card--orange">
+      <h2>Analytics Dashboard</h2>
+      <p>Real-time metrics and interactive charts that adapt seamlessly to any screen size.</p>
+    </div>
+    <div class="card card--green">
+      <h2>User Management</h2>
+      <p>Comprehensive tools for roles, permissions, and team collaboration at every scale.</p>
+    </div>
+    <div class="card card--purple">
+      <h2>Content Editor</h2>
+      <p>Rich text editing with markdown support, optimized for both touch and pointer input.</p>
+    </div>
+    <div class="card card--blue">
+      <h2>Cloud Storage</h2>
+      <p>Secure file management with drag-and-drop uploads and responsive file previews.</p>
+    </div>
+    <div class="card card--pink">
+      <h2>Notifications</h2>
+      <p>Smart alert system with priority channels and device-aware delivery preferences.</p>
+    </div>
+    <div class="card card--teal">
+      <h2>Settings</h2>
+      <p>Personalization hub with theme control, accessibility options, and layout preferences.</p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      // Apply theme from URL parameter (?theme=dark|light)
+      var params = new URLSearchParams(window.location.search);
+      var theme = params.get("theme");
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+
+      // Listen for theme changes from parent
+      window.addEventListener("message", function (e) {
+        if (e.data && e.data.type === "themeChange") {
+          document.documentElement.classList.toggle("dark", e.data.dark);
+        }
+      });
+
+      // Breakpoints matching the library's DEFAULT_BREAKPOINTS
+      var BP = {
+        mobileS: 380,
+        mobileM: 480,
+        tabletS: 834,
+        tabletM: 1024,
+        tabletL: 1366,
+        laptop: 1400,
+        desktop: 1920,
+        tv: 3840,
+      };
+
+      function detectDeviceType(w) {
+        if (w <= BP.mobileS)  return "mobile_s";
+        if (w <= BP.mobileM)  return "mobile_m";
+        if (w <= BP.tabletS)  return "tablet_s";
+        if (w <= BP.tabletM)  return "tablet_m";
+        if (w <= BP.tabletL)  return "tablet_l";
+        if (w <= BP.laptop)   return "laptop";
+        if (w <= BP.desktop)  return "desktop";
+        if (w <= BP.tv)       return "tv";
+        return "tv_4k";
+      }
+
+      function getOrientation(w, h) {
+        return w >= h ? "landscape" : "portrait";
+      }
+
+      function buildState() {
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var deviceType = detectDeviceType(w);
+        var orientation = getOrientation(w, h);
+
+        return {
+          type: "deviceState",
+          deviceType: deviceType,
+          orientation: orientation,
+          width: w,
+          height: h,
+          flags: {
+            isMobileS: deviceType === "mobile_s",
+            isMobileM: deviceType === "mobile_m",
+            isMobileL: deviceType === "mobile_l",
+            isMobile: deviceType.startsWith("mobile"),
+            isTabletS: deviceType === "tablet_s",
+            isTabletM: deviceType === "tablet_m",
+            isTabletL: deviceType === "tablet_l",
+            isTablet: deviceType.startsWith("tablet"),
+            isLaptop: deviceType === "laptop",
+            isDesktop: deviceType === "desktop",
+            isTV: deviceType === "tv" || deviceType === "tv_4k",
+            isTV4K: deviceType === "tv_4k",
+            isPortrait: orientation === "portrait",
+            isLandscape: orientation === "landscape",
+          },
+        };
+      }
+
+      function postState() {
+        try {
+          window.parent.postMessage(buildState(), "*");
+        } catch (_) {
+          // silently ignore if no parent
+        }
+      }
+
+      // Throttle helper (leading + trailing edge)
+      var throttleTimer = null;
+      var pending = false;
+
+      function throttledPost() {
+        if (throttleTimer) {
+          pending = true;
+          return;
+        }
+        postState();
+        throttleTimer = setTimeout(function () {
+          throttleTimer = null;
+          if (pending) {
+            pending = false;
+            postState();
+          }
+        }, 150);
+      }
+
+      // Listen for resize
+      window.addEventListener("resize", throttledPost);
+
+      // Listen for orientation change
+      if (screen.orientation) {
+        screen.orientation.addEventListener("change", throttledPost);
+      } else {
+        window.addEventListener("orientationchange", throttledPost);
+      }
+
+      // Initial post
+      postState();
+    })();
+  </script>
+</body>
+</html>

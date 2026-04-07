@@ -4,7 +4,7 @@ import prettier from "eslint-config-prettier";
 
 export default [
   {
-    files: ["src/**/*.ts", "e2e/**/*.ts", "playground/react/src/**/*.{ts,tsx}"],
+    files: ["src/**/*.ts", "e2e/**/*.ts", "playground/src/**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -24,6 +24,6 @@ export default [
   },
   prettier,
   {
-    ignores: ["dist/", "node_modules/", "coverage/", "playground/react/node_modules/"],
+    ignores: ["dist/", "node_modules/", "coverage/", "playground/node_modules/", "playground/dist/"],
   },
 ];

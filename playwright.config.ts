@@ -4,21 +4,15 @@ export default defineConfig({
   testDir: "./e2e",
   timeout: 30000,
   use: {
+    baseURL: "http://localhost:5173",
     headless: true,
   },
-  webServer: [
-    {
-      command: "npx serve . -l 3000 --no-clipboard",
-      port: 3000,
-      reuseExistingServer: true,
-    },
-    {
-      command: "npm run dev -- --port 5173",
-      cwd: "./playground/react",
-      port: 5173,
-      reuseExistingServer: true,
-    },
-  ],
+  webServer: {
+    command: "npm run dev",
+    cwd: "./playground",
+    port: 5173,
+    reuseExistingServer: true,
+  },
   projects: [
     {
       name: "chromium",

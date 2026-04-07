@@ -46,7 +46,16 @@ Thumbs.db
 # Claude Code
 .claude/
 
+# Playground
+playground/dist/
+playground/node_modules/
+
 # Plans
 docs/plans
 docs/superpowers
 .superpowers
+
+# screenshots
+screenshots/*.png
+screenshots/*.jpg
+screenshots/*.jpeg
