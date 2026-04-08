@@ -1,6 +1,6 @@
 {
   "name": "device-type-detection",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Framework-agnostic device type detection with live resize, SSR support, and zero dependencies.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -55,7 +55,7 @@
   "bugs": {
     "url": "https://github.com/EinfachValle/device-type-detection/issues"
   },
-  "homepage": "https://github.com/EinfachValle/device-type-detection#readme",
+  "homepage": "https://einfachvalle.github.io/device-type-detection/",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@testing-library/jest-dom": "^6.6.3",
