@@ -31,6 +31,10 @@ export function useResizable({
           h: currentHeight,
         };
 
+        // Disable pointer events on all iframes so they don't swallow mouse events during drag
+        const iframes = document.querySelectorAll("iframe");
+        iframes.forEach((f) => (f.style.pointerEvents = "none"));
+
         const handleMouseMove = (e: MouseEvent) => {
           if (!startRef.current) return;
           const { x, y, w, h } = startRef.current;
@@ -56,6 +60,7 @@ export function useResizable({
           document.removeEventListener("mouseup", handleMouseUp);
           document.body.style.cursor = "";
           document.body.style.userSelect = "";
+          iframes.forEach((f) => (f.style.pointerEvents = ""));
         };
 
         document.addEventListener("mousemove", handleMouseMove);

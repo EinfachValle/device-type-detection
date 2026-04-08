@@ -42,8 +42,35 @@ export default function ViewportCanvas({
   const theme = useTheme();
   const { handleMouseDown } = useResizable({ onResize });
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [canvasSize, setCanvasSize] = useState({ w: 0, h: 0 });
   // Iframe content is inverted: dark shell → light content, light shell → dark content
   const iframeDarkMode = theme.palette.mode === "light";
+
+  // Measure available canvas space
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setCanvasSize({
+        w: entry.contentRect.width,
+        h: entry.contentRect.height,
+      });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Scale down iframe to fit canvas (with padding for drag handles)
+  const padding = 48; // space for drag handles + margin
+  const scale =
+    canvasSize.w > 0 && canvasSize.h > 0
+      ? Math.min(
+          1,
+          (canvasSize.w - padding) / width,
+          (canvasSize.h - padding) / height,
+        )
+      : 1;
 
   const iframeSrc = useMemo(() => {
     const params = new URLSearchParams();
@@ -59,6 +86,14 @@ export default function ViewportCanvas({
       "*",
     );
   }, [iframeDarkMode]);
+
+  // Notify iframe of viewport dimension changes
+  useEffect(() => {
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: "viewportResize", width, height },
+      "*",
+    );
+  }, [width, height]);
 
   const [localW, setLocalW] = useState<string>(String(width));
   const [localH, setLocalH] = useState<string>(String(height));
@@ -211,6 +246,14 @@ export default function ViewportCanvas({
             size="small"
             variant="outlined"
           />
+          {scale < 1 && (
+            <Chip
+              label={`${Math.round(scale * 100)}%`}
+              size="small"
+              variant="outlined"
+              sx={{ fontSize: "0.7rem", opacity: 0.7 }}
+            />
+          )}
 
           {deviceType &&
             (deviceType.startsWith("mobile") ||
@@ -236,12 +279,13 @@ export default function ViewportCanvas({
 
       {/* Resizable iframe container */}
       <Box
+        ref={canvasRef}
         sx={{
           flex: 1,
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          overflow: "auto",
+          overflow: "hidden",
           p: 3,
           /* Dot-grid background like design tools */
           backgroundImage: (theme) =>
@@ -249,11 +293,23 @@ export default function ViewportCanvas({
           backgroundSize: "16px 16px",
         }}
       >
-        <Box sx={{ position: "relative" }}>
+        <Box
+          sx={{
+            position: "relative",
+            transform: scale < 1 ? `scale(${scale})` : undefined,
+            transformOrigin: "top center",
+          }}
+        >
           <iframe
             ref={iframeRef}
             src={iframeSrc}
             title="Device preview"
+            onLoad={() => {
+              iframeRef.current?.contentWindow?.postMessage(
+                { type: "viewportResize", width, height },
+                "*",
+              );
+            }}
             style={{
               width,
               height,

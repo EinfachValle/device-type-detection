@@ -11,6 +11,7 @@ function detect(overrides: Partial<DetectionInput> = {}): DeviceState {
     uaMobile: false,
     uaTablet: false,
     uaIPad: false,
+    uaTV: false,
     touchCapable: false,
     breakpoints: bp,
     ...overrides,
@@ -344,26 +345,52 @@ describe("detectDeviceType", () => {
       expect(state.deviceType).toBe("desktop");
     });
 
-    it("width 1921 -> tv", () => {
+    it("width 1921 -> desktop (no TV UA)", () => {
       const state = detect({ width: 1921, height: 1080 });
+      expect(state.deviceType).toBe("desktop");
+      expect(state.isDesktop).toBe(true);
+    });
+
+    it("width 3840 -> desktop (no TV UA)", () => {
+      const state = detect({ width: 3840, height: 2160 });
+      expect(state.deviceType).toBe("desktop");
+    });
+
+    it("width 7680 (8K) -> desktop (no TV UA)", () => {
+      const state = detect({ width: 7680, height: 4320 });
+      expect(state.deviceType).toBe("desktop");
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // 3b. TV detection (UA-based)
+  // ---------------------------------------------------------------------------
+  describe("TV detection (UA-based)", () => {
+    it("uaTV + width 1920 -> tv", () => {
+      const state = detect({ width: 1920, height: 1080, uaTV: true });
       expect(state.deviceType).toBe("tv");
       expect(state.isTV).toBe(true);
     });
 
-    it("width 3840 -> tv", () => {
-      const state = detect({ width: 3840, height: 2160 });
+    it("uaTV + width 3839 -> tv", () => {
+      const state = detect({ width: 3839, height: 2160, uaTV: true });
       expect(state.deviceType).toBe("tv");
     });
 
-    it("width 3841 -> tv_4k", () => {
-      const state = detect({ width: 3841, height: 2160 });
+    it("uaTV + width 3840 (4K) -> tv_4k", () => {
+      const state = detect({ width: 3840, height: 2160, uaTV: true });
       expect(state.deviceType).toBe("tv_4k");
       expect(state.isTV4K).toBe(true);
     });
 
-    it("width 7680 (8K) -> tv_4k", () => {
-      const state = detect({ width: 7680, height: 4320 });
+    it("uaTV + width 7680 (8K) -> tv_4k", () => {
+      const state = detect({ width: 7680, height: 4320, uaTV: true });
       expect(state.deviceType).toBe("tv_4k");
+    });
+
+    it("uaTV + small width -> tv (not mobile)", () => {
+      const state = detect({ width: 320, height: 240, uaTV: true });
+      expect(state.deviceType).toBe("tv");
     });
   });
 
@@ -378,8 +405,6 @@ describe("detectDeviceType", () => {
       [1024, "tablet_m", "tablet_l"],
       [1366, "tablet_l", "laptop"],
       [1400, "laptop", "desktop"],
-      [1920, "desktop", "tv"],
-      [3840, "tv", "tv_4k"],
     ];
 
     boundaries.forEach(([value, atBoundary, aboveBoundary]) => {
@@ -474,9 +499,9 @@ describe("detectDeviceType", () => {
         case "desktop":
           return detect({ width: 1600, height: 1080 });
         case "tv":
-          return detect({ width: 2560, height: 1440 });
+          return detect({ width: 2560, height: 1440, uaTV: true });
         case "tv_4k":
-          return detect({ width: 4096, height: 2160 });
+          return detect({ width: 4096, height: 2160, uaTV: true });
       }
     }
 
@@ -649,10 +674,20 @@ describe("detectDeviceType", () => {
       expect(state.deviceType).toBe("desktop");
     });
 
-    it("width 3001 with custom bp -> tv_4k", () => {
+    it("width 3001 with custom bp -> desktop (no TV UA)", () => {
       const state = detect({
         width: 3001,
         height: 2000,
+        breakpoints: customBp,
+      });
+      expect(state.deviceType).toBe("desktop");
+    });
+
+    it("width 3001 with custom bp + uaTV -> tv_4k", () => {
+      const state = detect({
+        width: 3001,
+        height: 2000,
+        uaTV: true,
         breakpoints: customBp,
       });
       expect(state.deviceType).toBe("tv_4k");

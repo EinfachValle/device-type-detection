@@ -41,7 +41,8 @@ createDeviceDetector(options?)     # Factory, returns DeviceStore
 
 1. UA says mobile + touch + not iPad -> mobile_s/m/l by width
 2. UA says tablet/iPad + touch -> tablet_s/m/l by width
-3. Viewport-only fallback: tv_4k > tv > desktop > laptop > tablet_l > ... > mobile_s
+3. UA says TV (Tizen, WebOS, FireTV, Roku, etc.) -> tv/tv_4k by width
+4. Viewport-only fallback: desktop > laptop > tablet_l > ... > mobile_s (max is desktop, no tv/tv_4k)
 
 **SSR path**: If `typeof window === 'undefined'`, factory returns static state immediately — no listeners, no subscriptions.
 
@@ -53,7 +54,7 @@ Each module is a folder under `src/` with `index.ts` (source) and co-located `*.
 - **types/** — DeviceCategory, DeviceState, BreakpointConfig, DetectorOptions, DeviceStore
 - **breakpoints/** — DEFAULT_BREAKPOINTS (8 thresholds: 380–3840px)
 - **detect/** — Pure `detectDeviceType(input) -> DeviceState`, no browser APIs
-- **ua-parser/** — Regex-based mobile/tablet/iPad detection from UA string
+- **ua-parser/** — Regex-based mobile/tablet/iPad/TV detection from UA string
 - **throttle/** — Own implementation replacing lodash, with `.cancel()` for cleanup
 - **observe/** — Aggregates ResizeObserver, window resize, matchMedia, screen.orientation, with `notifyDeferred()` for orientation events (rAF + legacy `orientationchange` fallback)
 - **ssr/** — `isSSR()`, `getSSRDefaults(category)` with consistent dimensions per device type

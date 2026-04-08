@@ -8,5 +8,5 @@ export const DEFAULT_BREAKPOINTS: BreakpointConfig = {
   tabletL: 1366,
   laptop: 1400,
   desktop: 1920,
-  tv: 3840,
+  tv: 3839,
 };

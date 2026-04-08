@@ -1,6 +1,6 @@
 {
   "name": "device-type-detection",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Framework-agnostic device type detection with live resize, SSR support, and zero dependencies.",
   "type": "module",
   "main": "./dist/index.cjs",

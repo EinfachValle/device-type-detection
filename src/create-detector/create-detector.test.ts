@@ -217,17 +217,9 @@ describe("createDeviceDetector", () => {
       breakpoints: { desktop: 1600 },
     });
     const state = store.getState();
-    // width 1601 > desktop(1600) => tv with default tv=3840? No: > 1600(desktop) but <= 1920(default desktop mapped to tv breakpoint)
-    // Actually the custom only overrides desktop to 1600, other breakpoints remain default
-    // viewport cascade: width 1601 > laptop(1400)? yes, > desktop(1600)? yes => next: > tv(3840)? no => so it's tv?
-    // Wait: the cascade is: > tv(3840)? no. > desktop(1600)? yes => tv. No wait:
-    // > tv => tv_4k, > desktop => tv, > laptop => desktop
-    // With custom desktop=1600: width 1601 > laptop(1400) => desktop... wait let me re-read:
-    // if width > breakpoints.tv(3840) -> tv_4k
-    // else if width > breakpoints.desktop(1600) -> tv
-    // else if width > breakpoints.laptop(1400) -> desktop
-    // 1601 > 1600 => tv
-    expect(state.deviceType).toBe("tv");
+    // Viewport cascade (no TV UA): max is desktop
+    // width 1601 > laptop(1400) => desktop
+    expect(state.deviceType).toBe("desktop");
   });
 
   it("accepts custom throttleMs option", () => {

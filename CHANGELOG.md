@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.1.1] - 2026-04-08
+
+### Fixed
+
+- TV detection now uses User-Agent instead of viewport width — WQHD (2560px) and 4K (3840px) monitors correctly detect as "desktop", not "tv"
+- Viewport-only fallback cascade maxes out at "desktop" — tv/tv_4k only reachable via Smart TV UA (Tizen, WebOS, FireTV, Roku, etc.)
+- Playground viewport resize now updates detected device type in real-time via postMessage
+- Manual resize clears UA simulation so detection matches actual viewport dimensions
+- Drag-to-resize works smoothly over iframe (pointer-events: none during drag)
+- Breakpoint scale in demo shows all 10 device categories (was missing mobile_l)
+- Scrollbar in demo uses accent color that updates with device type changes
+- Playground defaults to matching preset for current device (desktop users see Full HD)
+
+### Added
+
+- `isTV` field in `UAResult` from `parseUserAgent()` — detects Smart TV browsers
+- `uaTV` field in `DetectionInput` for `detectDeviceType()`
+- TV UA simulation in playground (Samsung Tizen) for Smart TV presets
+- Auto-scale: iframe scales down to fit available canvas space with zoom % indicator
+- New E2E tests verifying detection updates on preset switch, dimension input, rotation, and iframe sync
+
+### Changed
+
+- Detection cascade: new step 3 (UA TV) before viewport fallback
+- Viewport fallback no longer returns tv/tv_4k — maximum is desktop
+- Playground presets: WQHD/4K moved to Desktop group, TV group uses Smart TV UA simulation
+- Default preset matches actual device (was hardcoded to iPhone 15 Pro Max)
+
 ## [2.1.0] - 2026-04-08
 
 ### Added

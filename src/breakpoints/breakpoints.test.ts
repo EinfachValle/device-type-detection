@@ -19,7 +19,7 @@ describe("DEFAULT_BREAKPOINTS", () => {
     expect(DEFAULT_BREAKPOINTS.tabletL).toBe(1366);
     expect(DEFAULT_BREAKPOINTS.laptop).toBe(1400);
     expect(DEFAULT_BREAKPOINTS.desktop).toBe(1920);
-    expect(DEFAULT_BREAKPOINTS.tv).toBe(3840);
+    expect(DEFAULT_BREAKPOINTS.tv).toBe(3839);
   });
 
   it("breakpoints are in ascending order", () => {

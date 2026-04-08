@@ -25,6 +25,7 @@ export interface DetectionInput {
   uaMobile: boolean;
   uaTablet: boolean;
   uaIPad: boolean;
+  uaTV: boolean;
   touchCapable: boolean;
   breakpoints: BreakpointConfig;
 }
@@ -36,6 +37,7 @@ export function detectDeviceType(input: DetectionInput): DeviceState {
     uaMobile,
     uaTablet,
     uaIPad,
+    uaTV,
     touchCapable,
     breakpoints,
   } = input;
@@ -67,13 +69,17 @@ export function detectDeviceType(input: DetectionInput): DeviceState {
       deviceType = TABLET_L;
     }
   }
-  // 3. Viewport cascade
-  else {
+  // 3. UA TV (Smart TV browsers)
+  else if (uaTV) {
     if (width > breakpoints.tv) {
       deviceType = TV_4K;
-    } else if (width > breakpoints.desktop) {
+    } else {
       deviceType = TV;
-    } else if (width > breakpoints.laptop) {
+    }
+  }
+  // 4. Viewport cascade (max: desktop)
+  else {
+    if (width > breakpoints.laptop) {
       deviceType = DESKTOP;
     } else if (width > breakpoints.tabletL) {
       deviceType = LAPTOP;

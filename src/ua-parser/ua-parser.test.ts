@@ -141,12 +141,71 @@ describe("parseUserAgent", () => {
     });
   });
 
+  describe("Smart TV browsers", () => {
+    it("Samsung Tizen -> isTV=true", () => {
+      const ua =
+        "Mozilla/5.0 (SMART-TV; LINUX; Tizen 6.5) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/5.0 Chrome/85.0.4183.93 TV Safari/537.36";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(true);
+      expect(result.isMobile).toBe(false);
+    });
+
+    it("LG WebOS -> isTV=true", () => {
+      const ua =
+        "Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 WebOS/6.0";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(true);
+    });
+
+    it("Amazon FireTV -> isTV=true", () => {
+      const ua =
+        "Mozilla/5.0 (Linux; Android 9; AFTSS Build/PS7285) AppleWebKit/537.36 (KHTML, like Gecko) Silk/100.3.1 like Chrome/100.0.4896.127 Mobile Safari/537.36 FireTV/2.0";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(true);
+    });
+
+    it("Roku -> isTV=true", () => {
+      const ua = "Roku/DVP-12.5 (12.5.0 build 4183-AE)";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(true);
+    });
+
+    it("Chromecast -> isTV=true", () => {
+      const ua =
+        "Mozilla/5.0 (Linux; Android 12; Build/STTE.240206.002) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.153 Mobile Safari/537.36 CrKey/1.56.500000";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(true);
+    });
+
+    it("Sony BRAVIA -> isTV=true", () => {
+      const ua =
+        "Mozilla/5.0 (Linux; Android 10; BRAVIA VH1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(true);
+    });
+
+    it("Desktop Chrome -> isTV=false", () => {
+      const ua =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(false);
+    });
+
+    it("iPhone -> isTV=false", () => {
+      const ua =
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
+      const result = parseUserAgent(ua, 0);
+      expect(result.isTV).toBe(false);
+    });
+  });
+
   describe("Edge cases", () => {
     it("empty UA string -> all false", () => {
       const result = parseUserAgent("", 0);
       expect(result.isMobile).toBe(false);
       expect(result.isTablet).toBe(false);
       expect(result.isIPad).toBe(false);
+      expect(result.isTV).toBe(false);
     });
 
     it('UA with "tablet" keyword -> isTablet=true', () => {

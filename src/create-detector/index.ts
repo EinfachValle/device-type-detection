@@ -45,6 +45,7 @@ export function createDeviceDetector(options?: DetectorOptions): DeviceStore {
     uaMobile: ua.isMobile,
     uaTablet: ua.isTablet,
     uaIPad: ua.isIPad,
+    uaTV: ua.isTV,
     touchCapable,
     breakpoints,
   });
@@ -59,6 +60,7 @@ export function createDeviceDetector(options?: DetectorOptions): DeviceStore {
         uaMobile: ua.isMobile,
         uaTablet: ua.isTablet,
         uaIPad: ua.isIPad,
+        uaTV: ua.isTV,
         touchCapable,
         breakpoints,
       });

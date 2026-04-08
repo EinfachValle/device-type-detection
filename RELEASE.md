@@ -1,47 +1,56 @@
-# v2.1.0 — Constants, orientation fix, and playground redesign
+# v2.1.1 — TV detection via User-Agent, playground fixes
 
 ## Highlights
 
-- **No more magic strings** — all device types and orientations are exported constants (`MOBILE_S`, `DESKTOP`, `ORIENTATION_PORTRAIT`, etc.)
-- **Improved orientation detection** — `notifyDeferred()` waits for browser dimensions to update after rotation, with legacy `orientationchange` fallback
-- **IIFE build** — `DeviceTypeDetection` global for script-tag usage
-- **Playground redesign** — new landing page, integration dialog, PWA support, and additional device presets
+- **TV detection via UA** — Smart TVs (Tizen, WebOS, FireTV, Roku, etc.) are now detected by User-Agent, not viewport width
+- **WQHD/4K = desktop** — viewport-only fallback maxes out at "desktop", no false "tv" classification
+- **Playground fixes** — resize updates detection in real-time, auto-scaling, smooth drag, correct defaults
 
-## New Exports
+## Breaking Change from 2.1.0
 
-```typescript
-import {
-  DEFAULT_SSR_DEVICE_TYPE,
-  DEFAULT_THROTTLE_MS,
-  DESKTOP,
-  DEVICE_CATEGORIES,
-  LAPTOP,
-  MOBILE_L,
-  MOBILE_M,
-  MOBILE_S,
-  ORIENTATION_LANDSCAPE,
-  ORIENTATION_PORTRAIT,
-  SSR_DIMENSIONS,
-  TABLET_L,
-  TABLET_M,
-  TABLET_S,
-  TV,
-  TV_4K,
-} from "device-type-detection";
+The viewport-only detection cascade no longer returns `tv` or `tv_4k`. These device types are now **only reachable via Smart TV User-Agent**. If you relied on `isTV` or `isTV4K` being `true` for wide desktop monitors, they will now be `isDesktop: true`.
+
+### Before (2.1.0)
+
+```text
+2560px desktop monitor → deviceType: "tv"     ← wrong
+3840px 4K monitor      → deviceType: "tv"     ← wrong
 ```
 
-## Interactive Demo
+### After (2.1.1)
 
-**<https://einfachvalle.github.io/device-type-detection/>**
+```text
+2560px desktop monitor → deviceType: "desktop" ← correct
+3840px 4K monitor      → deviceType: "desktop" ← correct
+Samsung Tizen TV       → deviceType: "tv"      ← correct (via UA)
+```
 
-Redesigned with landing page, integration dialog, and device presets.
+## New API Fields
 
-## Script Tag Usage (IIFE)
+`parseUserAgent()` now returns `isTV: boolean`:
 
-```html
-<script src="https://unpkg.com/device-type-detection/playground/public/index.global.js"></script>
-<script>
-  const detector = DeviceTypeDetection.createDeviceDetector();
-  console.log(detector.getState().deviceType);
-</script>
+```typescript
+const ua = parseUserAgent(navigator.userAgent, navigator.maxTouchPoints);
+// ua.isTV — true for Smart TV browsers (Tizen, WebOS, FireTV, Roku, etc.)
+```
+
+`detectDeviceType()` accepts `uaTV: boolean`:
+
+```typescript
+const state = detectDeviceType({
+  width: 1920,
+  height: 1080,
+  uaTV: true, // ← new
+  // ... other fields
+});
+// state.deviceType === "tv"
+```
+
+## Detection Cascade
+
+```text
+1. UA mobile + touch + !iPad  → mobile_s / mobile_m / mobile_l
+2. UA tablet/iPad + touch     → tablet_s / tablet_m / tablet_l
+3. UA TV                      → tv / tv_4k                      ← NEW
+4. Viewport-only              → mobile_s ... desktop (max)       ← CHANGED
 ```
