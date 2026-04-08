@@ -1,4 +1,5 @@
 import { DEFAULT_BREAKPOINTS } from "../breakpoints";
+import { DEFAULT_SSR_DEVICE_TYPE, DEFAULT_THROTTLE_MS } from "../constants";
 import { detectDeviceType } from "../detect";
 import { createObserver } from "../observe";
 import { getSSRDefaults, isSSR } from "../ssr";
@@ -23,8 +24,8 @@ export function createDeviceDetector(options?: DetectorOptions): DeviceStore {
     ...DEFAULT_BREAKPOINTS,
     ...options?.breakpoints,
   };
-  const throttleMs = options?.throttleMs ?? 150;
-  const ssrDeviceType = options?.ssrDeviceType ?? "desktop";
+  const throttleMs = options?.throttleMs ?? DEFAULT_THROTTLE_MS;
+  const ssrDeviceType = options?.ssrDeviceType ?? DEFAULT_SSR_DEVICE_TYPE;
 
   if (isSSR()) {
     const state = getSSRDefaults(ssrDeviceType);

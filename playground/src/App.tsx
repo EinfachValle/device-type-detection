@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
-  BrightnessAutoRounded as BrightnessAutoIcon,
+  Brightness4Rounded as BrightnessAutoIcon,
   DarkModeRounded as DarkModeIcon,
   InfoOutlined as InfoOutlinedIcon,
   LightModeRounded as LightModeIcon,
@@ -27,6 +27,7 @@ import { type ThemeMode, getTheme } from "./theme";
 import DetectionPanel from "./components/DetectionPanel";
 import DevicePresetsSidebar from "./components/DevicePresetsSidebar";
 import ViewportCanvas from "./components/ViewportCanvas";
+import { DEFAULT_VIEWPORT, type SimulateUA } from "./data/presets";
 
 interface IframeDeviceState {
   type: "deviceState";
@@ -49,9 +50,10 @@ export default function App() {
   );
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
-  const [viewportWidth, setViewportWidth] = useState(430);
-  const [viewportHeight, setViewportHeight] = useState(932);
+  const [viewportWidth, setViewportWidth] = useState(DEFAULT_VIEWPORT.width);
+  const [viewportHeight, setViewportHeight] = useState(DEFAULT_VIEWPORT.height);
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [simulateUA, setSimulateUA] = useState<SimulateUA>("mobile");
   const [deviceState, setDeviceState] = useState<IframeDeviceState | null>(
     null,
   );
@@ -71,10 +73,11 @@ export default function App() {
   }, []);
 
   const handleSelectPreset = useCallback(
-    (name: string, width: number, height: number) => {
+    (name: string, width: number, height: number, ua: SimulateUA) => {
       setSelectedPreset(name);
       setViewportWidth(width);
       setViewportHeight(height);
+      setSimulateUA(ua);
       if (!isDesktop) setSidebarOpen(false);
     },
     [isDesktop],
@@ -198,6 +201,7 @@ export default function App() {
             width={viewportWidth}
             height={viewportHeight}
             deviceType={deviceState?.deviceType ?? null}
+            simulateUA={simulateUA}
             onResize={handleResize}
             onRotate={handleRotate}
           />

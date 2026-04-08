@@ -1,0 +1,21 @@
+{
+  "name": "DEVICE-TYPE-DETECTION",
+  "short_name": "DTD",
+  "description": "Interactive playground for the device-type-detection library — resize viewports, test device presets, see detection in real-time.",
+  "start_url": "/device-type-detection/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#e8860c",
+  "icons": [
+    {
+      "src": "img/favicon/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/favicon/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

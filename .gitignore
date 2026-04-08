@@ -49,6 +49,7 @@ Thumbs.db
 # Playground
 playground/dist/
 playground/node_modules/
+playground/public/index.global.js
 
 # Plans
 docs/plans

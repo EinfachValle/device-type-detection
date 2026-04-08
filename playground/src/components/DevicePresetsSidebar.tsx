@@ -1,5 +1,4 @@
 import {
-  DevicesRounded as DevicesIcon,
   LaptopMacRounded as LaptopMacIcon,
   PhoneIphoneRounded as PhoneIphoneIcon,
   TabletMacRounded as TabletMacIcon,
@@ -16,7 +15,11 @@ import {
   Typography,
 } from "@mui/material";
 
-import { PRESET_GROUPS, type PresetGroup } from "../data/presets";
+import {
+  PRESET_GROUPS,
+  type PresetGroup,
+  type SimulateUA,
+} from "../data/presets";
 
 const GROUP_ICONS: Record<PresetGroup["icon"], React.ElementType> = {
   phone: PhoneIphoneIcon,
@@ -27,7 +30,12 @@ const GROUP_ICONS: Record<PresetGroup["icon"], React.ElementType> = {
 
 interface Props {
   selectedPreset: string | null;
-  onSelectPreset: (name: string, width: number, height: number) => void;
+  onSelectPreset: (
+    name: string,
+    width: number,
+    height: number,
+    simulateUA: SimulateUA,
+  ) => void;
   onClose?: () => void;
   themeToggle?: React.ReactNode;
 }
@@ -64,16 +72,30 @@ export default function DevicePresetsSidebar({
           borderColor: "divider",
         }}
       >
-        <DevicesIcon color="primary" />
+        <Box
+          component="img"
+          src={import.meta.env.BASE_URL + "img/favicon/logo-64.png"}
+          alt="Logo"
+          sx={{ width: 28, height: 28 }}
+        />
         <Box>
           <Typography
             variant="subtitle2"
-            sx={{ fontWeight: 700, lineHeight: 1.2 }}
+            sx={{
+              fontWeight: 700,
+              lineHeight: 1.2,
+              textTransform: "uppercase",
+              letterSpacing: "0.03em",
+            }}
           >
-            device-type-detection
+            DEVICE-TYPE-DETECTION
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Playground
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontWeight: 500, letterSpacing: "0.06em" }}
+          >
+            Playground &middot; v{__APP_VERSION__}
           </Typography>
         </Box>
       </Box>
@@ -111,6 +133,7 @@ export default function DevicePresetsSidebar({
                             preset.name,
                             preset.width,
                             preset.height,
+                            group.simulateUA,
                           );
                           onClose?.();
                         }}
@@ -167,9 +190,6 @@ export default function DevicePresetsSidebar({
               gap: 1,
             }}
           >
-            <Typography variant="caption" color="text.secondary">
-              Theme
-            </Typography>
             {themeToggle}
           </Box>
         </>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ScreenRotationRounded as ScreenRotationIcon,
@@ -14,13 +14,19 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import {
+  ORIENTATION_LANDSCAPE,
+  ORIENTATION_PORTRAIT,
+} from "device-type-detection";
 
+import type { SimulateUA } from "../data/presets";
 import { useResizable } from "../hooks/useResizable";
 
 interface Props {
   width: number;
   height: number;
   deviceType?: string | null;
+  simulateUA?: SimulateUA;
   onResize: (width: number, height: number) => void;
   onRotate: () => void;
 }
@@ -29,6 +35,7 @@ export default function ViewportCanvas({
   width,
   height,
   deviceType,
+  simulateUA,
   onResize,
   onRotate,
 }: Props) {
@@ -37,6 +44,13 @@ export default function ViewportCanvas({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Iframe content is inverted: dark shell → light content, light shell → dark content
   const iframeDarkMode = theme.palette.mode === "light";
+
+  const iframeSrc = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set("theme", iframeDarkMode ? "dark" : "light");
+    if (simulateUA) params.set("ua", simulateUA);
+    return import.meta.env.BASE_URL + "demo.html?" + params.toString();
+  }, [iframeDarkMode, simulateUA]);
 
   // Notify iframe of theme changes
   useEffect(() => {
@@ -81,7 +95,8 @@ export default function ViewportCanvas({
     }
   };
 
-  const orientation = width >= height ? "landscape" : "portrait";
+  const orientation =
+    width >= height ? ORIENTATION_LANDSCAPE : ORIENTATION_PORTRAIT;
 
   /* Grip dot pattern for drag handles */
   const gripDot = (color: string) =>
@@ -197,19 +212,25 @@ export default function ViewportCanvas({
             variant="outlined"
           />
 
-          <Divider orientation="vertical" flexItem />
+          {deviceType &&
+            (deviceType.startsWith("mobile") ||
+              deviceType.startsWith("tablet")) && (
+              <>
+                <Divider orientation="vertical" flexItem />
 
-          <IconButton
-            size="small"
-            onClick={onRotate}
-            title="Rotate"
-            sx={{
-              transition: "transform 0.2s",
-              "&:hover": { transform: "rotate(90deg)" },
-            }}
-          >
-            <ScreenRotationIcon fontSize="small" />
-          </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={onRotate}
+                  title="Rotate"
+                  sx={{
+                    transition: "transform 0.2s",
+                    "&:hover": { transform: "rotate(90deg)" },
+                  }}
+                >
+                  <ScreenRotationIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
         </Box>
       </Box>
 
@@ -231,11 +252,7 @@ export default function ViewportCanvas({
         <Box sx={{ position: "relative" }}>
           <iframe
             ref={iframeRef}
-            src={
-              import.meta.env.BASE_URL +
-              "demo.html?theme=" +
-              (iframeDarkMode ? "dark" : "light")
-            }
+            src={iframeSrc}
             title="Device preview"
             style={{
               width,

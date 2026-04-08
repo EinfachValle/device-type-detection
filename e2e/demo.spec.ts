@@ -34,7 +34,7 @@ test.describe("Unified Playground", () => {
     await expect(iframe).toHaveAttribute("src", /demo\.html/);
 
     const frame = page.frameLocator("iframe");
-    await expect(frame.locator(".hero h1")).toHaveText("Demo App");
+    await expect(frame.locator(".hero h1")).toBeVisible();
   });
 
   test("preset click updates viewport dimensions", async ({ page }) => {

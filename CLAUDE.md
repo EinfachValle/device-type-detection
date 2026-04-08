@@ -49,25 +49,30 @@ createDeviceDetector(options?)     # Factory, returns DeviceStore
 
 Each module is a folder under `src/` with `index.ts` (source) and co-located `*.test.ts`. All public API re-exported through `src/index.ts`.
 
+- **constants/** — All device type constants (`MOBILE_S`, `MOBILE_M`, ..., `TV_4K`), orientation constants, `DEFAULT_THROTTLE_MS`, `DEFAULT_SSR_DEVICE_TYPE`, `SSR_DIMENSIONS`. No magic strings in source — all modules import from here.
 - **types/** — DeviceCategory, DeviceState, BreakpointConfig, DetectorOptions, DeviceStore
 - **breakpoints/** — DEFAULT_BREAKPOINTS (8 thresholds: 380–3840px)
 - **detect/** — Pure `detectDeviceType(input) -> DeviceState`, no browser APIs
 - **ua-parser/** — Regex-based mobile/tablet/iPad detection from UA string
 - **throttle/** — Own implementation replacing lodash, with `.cancel()` for cleanup
-- **observe/** — Aggregates ResizeObserver, window resize, matchMedia, screen.orientation
+- **observe/** — Aggregates ResizeObserver, window resize, matchMedia, screen.orientation, with `notifyDeferred()` for orientation events (rAF + legacy `orientationchange` fallback)
 - **ssr/** — `isSSR()`, `getSSRDefaults(category)` with consistent dimensions per device type
 - **create-detector/** — Factory that wires everything together into a DeviceStore
 
 ## Key patterns
 
+- **No magic strings**: All device type strings (`"mobile_s"`, etc.) and orientation strings are constants in `src/constants/`. All source files import from there — never use string literals for device types.
 - **DeviceState has 23 properties**: deviceType (category without orientation suffix) + orientation as separate field. Boolean flags derived directly from deviceType — this was a deliberate fix from v1 where flags were always false due to suffix mismatch.
 - **Shallow equality** in create-detector prevents unnecessary subscriber calls even on frequent resize events.
-- **Observe layer** uses ResizeObserver + resize event complementarily (not as fallback) because mobile browsers with dynamic toolbars may only fire one or the other.
+- **Observe layer** uses ResizeObserver + resize event complementarily (not as fallback) because mobile browsers with dynamic toolbars may only fire one or the other. Orientation events use `notifyDeferred()` (rAF) to wait for dimensions to update after rotation.
 - **Tests mock `Date.now`** in throttle tests because Jest legacy fake timers don't mock it automatically.
+- **IIFE bundle**: `tsup.config.ts` produces an IIFE build (`playground/public/index.global.js`) exposing `DeviceTypeDetection` global for the playground's `demo.html`.
 
 ## Config notes
 
 - `"type": "module"` in package.json — Jest config must be `.cjs` extension
 - ESLint uses flat config format (v9) in `eslint.config.js`
-- Playwright spins up two web servers: serve on :3000 (vanilla), Vite on :5173 (React playground)
+- Playwright spins up Vite on :5173 (React playground)
 - Prettier uses `@trivago/prettier-plugin-sort-imports` for import ordering
+- Playground injects library version via Vite `define` (`__APP_VERSION__` from root `package.json`)
+- Playground uses `simple-icons` for framework logos in the integration dialog

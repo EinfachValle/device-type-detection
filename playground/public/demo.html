@@ -3,293 +3,637 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demo App</title>
+  <title>device-type-detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:ital,wght@0,400;0,600&display=swap" rel="stylesheet" />
   <style>
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #fafafa;
-      --text: #1a1a2e;
-      --text-muted: #5a5a7a;
-      --card-text: #fff;
-      --card-shadow: rgba(0, 0, 0, 0.1);
-      --hero-from: #651fff;
-      --hero-to: #b388ff;
+      --bg: #f5f4f0;
+      --bg-elevated: #ffffff;
+      --bg-code: #eae8e2;
+      --text: #1c1c1e;
+      --text-2: #4a4a52;
+      --text-3: #8a8a96;
+      --border: rgba(0, 0, 0, 0.09);
+      --dot: rgba(0, 0, 0, 0.06);
+      --flag-inactive-bg: rgba(0, 0, 0, 0.04);
+      --flag-inactive-text: #8a8a96;
+      --accent: #e8860c;
+      --accent-glow: rgba(232, 134, 12, 0.10);
     }
 
     :root.dark {
-      --bg: #1a1a2e;
-      --text: #e2e2f0;
-      --text-muted: #9a9abb;
-      --card-shadow: rgba(0, 0, 0, 0.35);
-      --hero-from: #4527a0;
-      --hero-to: #7c4dff;
+      --bg: #0c0c0f;
+      --bg-elevated: #17171c;
+      --bg-code: #111114;
+      --text: #e6e6ea;
+      --text-2: #a0a0ac;
+      --text-3: #606068;
+      --border: rgba(255, 255, 255, 0.07);
+      --dot: rgba(255, 255, 255, 0.035);
+      --flag-inactive-bg: rgba(255, 255, 255, 0.05);
+      --flag-inactive-text: #606068;
     }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+      background-size: 20px 20px;
       color: var(--text);
+      line-height: 1.55;
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ═══════ HERO ═══════ */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: clamp(2rem, 6vw, 4.5rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 3rem);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 0%, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+      transition: background 0.6s ease;
+    }
+    .hero__eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-3);
+      margin-bottom: clamp(0.5rem, 2vw, 1.2rem);
+      position: relative;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 8vw, 5rem);
+      letter-spacing: -0.03em;
+      color: var(--accent);
+      transition: color 0.4s ease;
+      position: relative;
+      line-height: 1.1;
+    }
+    .hero__meta {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(0.4rem, 1vw, 0.75rem);
+      margin-top: clamp(0.6rem, 2vw, 1.2rem);
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .hero__badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+      font-weight: 400;
+      padding: 0.3em 0.7em;
+      border-radius: 6px;
+      background: var(--flag-inactive-bg);
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    /* ═══════ BREAKPOINT SCALE ═══════ */
+    .scale {
+      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 3rem);
+    }
+    .scale__title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      margin-bottom: clamp(0.6rem, 1.5vw, 1rem);
+      color: var(--text-2);
+    }
+    .scale__bar {
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+    }
+    .scale__seg {
+      flex: 1;
+      text-align: center;
+      padding: clamp(0.4rem, 1vw, 0.6rem) 2px;
+      border-right: 1px solid var(--border);
+      transition: background 0.3s ease, color 0.3s ease;
+      cursor: default;
+      min-width: 0;
+    }
+    .scale__seg:last-child { border-right: none; }
+    .scale__seg-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-3);
+      transition: color 0.3s ease;
+    }
+    .scale__seg-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.45rem, 0.75vw, 0.6rem);
+      color: var(--text-3);
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+    .scale__seg--active {
+      background: var(--accent);
+    }
+    .scale__seg--active .scale__seg-label,
+    .scale__seg--active .scale__seg-value {
+      color: #fff;
+    }
+
+    /* ═══════ FLAGS ═══════ */
+    .flags {
+      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 3rem);
+    }
+    .flags__title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+      color: var(--text-2);
+    }
+    .flags__group-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.55rem, 0.9vw, 0.65rem);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-3);
+      margin: clamp(0.5rem, 1vw, 0.8rem) 0 clamp(0.3rem, 0.6vw, 0.5rem);
+    }
+    .flags__group-label:first-child { margin-top: 0; }
+    .flags__grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(0.3rem, 0.6vw, 0.4rem);
+    }
+    .flag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.6rem, 1vw, 0.75rem);
+      font-weight: 400;
+      padding: 0.3em 0.65em;
+      border-radius: 5px;
+      background: var(--flag-inactive-bg);
+      color: var(--flag-inactive-text);
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+    .flag--on {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ═══════ SHOWCASE ═══════ */
+    .showcase {
+      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 3rem);
+    }
+    .showcase__title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+      color: var(--text-2);
+    }
+    .showcase__grid {
+      display: grid;
+      gap: clamp(0.6rem, 1.2vw, 1rem);
+      grid-template-columns: 1fr;
+    }
+    .card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.25s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      border-color: var(--accent);
+    }
+    :root.dark .card:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+    .card__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(1.8rem, 3vw, 2.4rem);
+      height: clamp(1.8rem, 3vw, 2.4rem);
+      border-radius: 7px;
+      background: var(--accent-glow);
+      margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+      transition: background 0.4s ease;
+    }
+    .card__icon svg {
+      width: 55%;
+      height: 55%;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.4s ease;
+    }
+    .card__heading {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.8rem, 1.3vw, 1rem);
+      margin-bottom: 0.3em;
+      color: var(--text);
+    }
+    .card__text {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: var(--text-2);
       line-height: 1.5;
     }
 
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
-      color: #fff;
-      padding: 2.5rem 1.5rem;
-      text-align: center;
+    /* ═══════ CODE ═══════ */
+    .code-section {
+      padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 4vw, 3rem);
     }
-
-    .hero h1 {
-      font-size: 1.75rem;
+    .code-section__title {
+      font-family: 'Syne', sans-serif;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+      color: var(--text-2);
     }
-
-    .hero p {
-      margin-top: 0.35rem;
-      font-size: 0.95rem;
-      opacity: 0.85;
+    .code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: clamp(0.8rem, 2vw, 1.25rem);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
-
-    /* Card grid — adapts from 1 to 6 columns */
-    .grid {
-      display: grid;
-      gap: 1rem;
-      padding: 1.5rem;
-      grid-template-columns: 1fr;
+    .code-block code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.6rem, 1vw, 0.78rem);
+      line-height: 1.7;
+      color: var(--text-2);
     }
+    .code-block .hl-kw  { color: #8b5cf6; }
+    .code-block .hl-str { color: #059669; }
+    .code-block .hl-fn  { color: #2d7dd2; }
+    .code-block .hl-cm  { color: var(--text-3); font-style: italic; }
+    .code-block .hl-num { color: #e8860c; }
+    :root.dark .code-block .hl-kw  { color: #a78bfa; }
+    :root.dark .code-block .hl-str { color: #34d399; }
+    :root.dark .code-block .hl-fn  { color: #60a5fa; }
+    :root.dark .code-block .hl-num { color: #fbbf24; }
 
+    /* ═══════ FOOTER ═══════ */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 4vw, 3rem);
+      border-top: 1px solid var(--border);
+      margin-top: clamp(0.5rem, 2vw, 1rem);
+    }
+    .footer__name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.6rem, 1vw, 0.75rem);
+      color: var(--text-3);
+    }
+    .footer__link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.6rem, 1vw, 0.75rem);
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .footer__link:hover { opacity: 0.7; }
+
+    /* ═══════ RESPONSIVE ═══════ */
     @media (min-width: 481px) {
-      .grid { grid-template-columns: repeat(2, 1fr); }
+      .showcase__grid { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (min-width: 835px) {
-      .grid { grid-template-columns: repeat(3, 1fr); }
+      .showcase__grid { grid-template-columns: repeat(3, 1fr); }
     }
-
     @media (min-width: 1401px) {
-      .grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; padding: 2rem; }
+      .showcase__grid { grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+      .card { padding: 1.5rem; }
     }
-
     @media (min-width: 1921px) {
-      .grid { grid-template-columns: repeat(5, 1fr); gap: 1.5rem; padding: 2.5rem; }
+      .showcase__grid { grid-template-columns: repeat(6, 1fr); gap: 1.4rem; }
+      body { background-size: 28px 28px; }
     }
-
-    @media (min-width: 3000px) {
-      .grid { grid-template-columns: repeat(6, 1fr); gap: 2rem; padding: 3rem; }
+    @media (max-width: 480px) {
+      .scale__seg-value { display: none; }
     }
-
-    /* Tiny screens — tighter spacing */
     @media (max-width: 380px) {
-      .grid { gap: 0.6rem; padding: 0.75rem; }
-      .hero { padding: 1.5rem 1rem; }
-      .hero h1 { font-size: 1.25rem; }
-      .card { padding: 1rem; }
-      .card h2 { font-size: 0.95rem; }
-      .card p { font-size: 0.75rem; }
+      .hero h1 { font-size: 1.8rem; }
+      .scale__seg { padding: 0.35rem 1px; }
     }
 
-    /* Large screens — bigger cards */
-    @media (min-width: 1921px) {
-      .hero { padding: 3.5rem 2rem; }
-      .hero h1 { font-size: 2.5rem; }
-      .hero p { font-size: 1.2rem; }
-      .card { padding: 2rem; border-radius: 1.25rem; }
-      .card h2 { font-size: 1.4rem; }
-      .card p { font-size: 1rem; }
+    /* ═══════ ANIMATION ═══════ */
+    @keyframes pulse-in {
+      0%   { transform: scale(0.96); opacity: 0.6; }
+      100% { transform: scale(1);    opacity: 1; }
     }
-
-    /* Cards */
-    .card {
-      border-radius: 1rem;
-      padding: 1.5rem;
-      color: var(--card-text);
-      box-shadow: 0 4px 14px var(--card-shadow);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px var(--card-shadow);
-    }
-
-    .card h2 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .card p {
-      font-size: 0.875rem;
-      opacity: 0.9;
-      line-height: 1.6;
-    }
-
-    .card--orange  { background: linear-gradient(135deg, #f97316, #fb923c); }
-    .card--green   { background: linear-gradient(135deg, #22c55e, #4ade80); }
-    .card--purple  { background: linear-gradient(135deg, #a855f7, #c084fc); }
-    .card--blue    { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
-    .card--pink    { background: linear-gradient(135deg, #ec4899, #f472b6); }
-    .card--teal    { background: linear-gradient(135deg, #14b8a6, #2dd4bf); }
+    .hero h1 { animation: pulse-in 0.35s ease-out; }
   </style>
 </head>
-<body>
+<body data-category="mobile">
+
   <header class="hero">
-    <h1>Demo App</h1>
-    <p>Responsive Card Layout</p>
+    <p class="hero__eyebrow">device-type-detection</p>
+    <h1 id="deviceType">&mdash;</h1>
+    <div class="hero__meta">
+      <span class="hero__badge" id="dims">&mdash; &times; &mdash;</span>
+      <span class="hero__badge" id="orient">&mdash;</span>
+      <span class="hero__badge" id="touch">&mdash;</span>
+    </div>
   </header>
 
-  <main class="grid">
-    <div class="card card--orange">
-      <h2>Analytics Dashboard</h2>
-      <p>Real-time metrics and interactive charts that adapt seamlessly to any screen size.</p>
+  <section class="scale">
+    <h2 class="scale__title">Breakpoint Scale</h2>
+    <div class="scale__bar" id="scaleBar">
+      <div class="scale__seg" data-type="mobile_s">
+        <div class="scale__seg-label">mobile_s</div>
+        <div class="scale__seg-value">&le;380</div>
+      </div>
+      <div class="scale__seg" data-type="mobile_m">
+        <div class="scale__seg-label">mobile_m</div>
+        <div class="scale__seg-value">&le;480</div>
+      </div>
+      <div class="scale__seg" data-type="tablet_s">
+        <div class="scale__seg-label">tablet_s</div>
+        <div class="scale__seg-value">&le;834</div>
+      </div>
+      <div class="scale__seg" data-type="tablet_m">
+        <div class="scale__seg-label">tablet_m</div>
+        <div class="scale__seg-value">&le;1024</div>
+      </div>
+      <div class="scale__seg" data-type="tablet_l">
+        <div class="scale__seg-label">tablet_l</div>
+        <div class="scale__seg-value">&le;1366</div>
+      </div>
+      <div class="scale__seg" data-type="laptop">
+        <div class="scale__seg-label">laptop</div>
+        <div class="scale__seg-value">&le;1400</div>
+      </div>
+      <div class="scale__seg" data-type="desktop">
+        <div class="scale__seg-label">desktop</div>
+        <div class="scale__seg-value">&le;1920</div>
+      </div>
+      <div class="scale__seg" data-type="tv">
+        <div class="scale__seg-label">tv</div>
+        <div class="scale__seg-value">&le;3840</div>
+      </div>
+      <div class="scale__seg" data-type="tv_4k">
+        <div class="scale__seg-label">tv_4k</div>
+        <div class="scale__seg-value">&gt;3840</div>
+      </div>
     </div>
-    <div class="card card--green">
-      <h2>User Management</h2>
-      <p>Comprehensive tools for roles, permissions, and team collaboration at every scale.</p>
-    </div>
-    <div class="card card--purple">
-      <h2>Content Editor</h2>
-      <p>Rich text editing with markdown support, optimized for both touch and pointer input.</p>
-    </div>
-    <div class="card card--blue">
-      <h2>Cloud Storage</h2>
-      <p>Secure file management with drag-and-drop uploads and responsive file previews.</p>
-    </div>
-    <div class="card card--pink">
-      <h2>Notifications</h2>
-      <p>Smart alert system with priority channels and device-aware delivery preferences.</p>
-    </div>
-    <div class="card card--teal">
-      <h2>Settings</h2>
-      <p>Personalization hub with theme control, accessibility options, and layout preferences.</p>
-    </div>
-  </main>
+  </section>
 
+  <section class="flags">
+    <h2 class="flags__title">Detection Flags</h2>
+    <div id="flagsContainer"></div>
+  </section>
+
+  <section class="showcase">
+    <h2 class="showcase__title">Features</h2>
+    <div class="showcase__grid">
+      <div class="card">
+        <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3 class="card__heading">Zero Dependencies</h3>
+        <p class="card__text">Framework-agnostic with zero runtime dependencies. Works with React, Vue, Svelte, or vanilla JS.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-7.07l-2.83 2.83M9.76 14.24l-2.83 2.83m11.14 0l-2.83-2.83M9.76 9.76L6.93 6.93"/></svg></div>
+        <h3 class="card__heading">Smart Detection</h3>
+        <p class="card__text">Combines User Agent, viewport width, and touch capability for accurate device classification.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M23 12A11 11 0 0 0 12 1M23 12a11 11 0 0 1-11 11M23 12H1m11-11a11 11 0 0 0 0 22M12 1a15.3 15.3 0 0 1 4 11 15.3 15.3 0 0 1-4 11"/></svg></div>
+        <h3 class="card__heading">Real-time Updates</h3>
+        <p class="card__text">ResizeObserver, resize events, and orientation changes — all throttled and deduplicated.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></div>
+        <h3 class="card__heading">SSR Support</h3>
+        <p class="card__text">Server-side rendering with configurable device-type defaults. No window object required.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/><path d="M4 12 20 12" stroke-dasharray="3 3"/></svg></div>
+        <h3 class="card__heading">Orientation Aware</h3>
+        <p class="card__text">Detects portrait and landscape with combined flags like isMobileVertical and isTabletHorizontal.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon"><svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3 class="card__heading">Custom Breakpoints</h3>
+        <p class="card__text">8 fully configurable thresholds from 380px to 3840px. Covers mobile_s through tv_4k.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="code-section">
+    <h2 class="code-section__title">Quick Start</h2>
+    <div class="code-block"><code><span class="hl-kw">import</span> { createDeviceDetector } <span class="hl-kw">from</span> <span class="hl-str">'device-type-detection'</span>;
+
+<span class="hl-kw">const</span> detector = <span class="hl-fn">createDeviceDetector</span>();
+
+detector.<span class="hl-fn">subscribe</span>((state) => {
+  console.<span class="hl-fn">log</span>(state.deviceType); <span class="hl-cm">// "mobile_m"</span>
+  console.<span class="hl-fn">log</span>(state.isMobile);    <span class="hl-cm">// true</span>
+  console.<span class="hl-fn">log</span>(state.orientation); <span class="hl-cm">// "portrait"</span>
+});</code></div>
+  </section>
+
+  <footer class="footer">
+    <span class="footer__name">device-type-detection v2.0.0</span>
+    <a class="footer__link" href="https://github.com/EinfachValle/device-type-detection" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="index.global.js"></script>
   <script>
     (function () {
-      // Apply theme from URL parameter (?theme=dark|light)
+      /* ── Theme ── */
       var params = new URLSearchParams(window.location.search);
-      var theme = params.get("theme");
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      }
-
-      // Listen for theme changes from parent
+      if (params.get("theme") === "dark") document.documentElement.classList.add("dark");
       window.addEventListener("message", function (e) {
         if (e.data && e.data.type === "themeChange") {
           document.documentElement.classList.toggle("dark", e.data.dark);
+          if (lastState) setAccentColors(categoryOf(lastState.deviceType));
         }
       });
 
-      // Breakpoints matching the library's DEFAULT_BREAKPOINTS
-      var BP = {
-        mobileS: 380,
-        mobileM: 480,
-        tabletS: 834,
-        tabletM: 1024,
-        tabletL: 1366,
-        laptop: 1400,
-        desktop: 1920,
-        tv: 3840,
+      /* ── Category colors ── */
+      var COLORS = {
+        mobile:  { hex: "#e8860c", r: 232, g: 134, b: 12  },
+        tablet:  { hex: "#2d7dd2", r: 45,  g: 125, b: 210 },
+        laptop:  { hex: "#7c3aed", r: 124, g: 58,  b: 237 },
+        desktop: { hex: "#059669", r: 5,   g: 150, b: 105 },
+        tv:      { hex: "#db2777", r: 219, g: 39,  b: 119 },
       };
 
-      function detectDeviceType(w) {
-        if (w <= BP.mobileS)  return "mobile_s";
-        if (w <= BP.mobileM)  return "mobile_m";
-        if (w <= BP.tabletS)  return "tablet_s";
-        if (w <= BP.tabletM)  return "tablet_m";
-        if (w <= BP.tabletL)  return "tablet_l";
-        if (w <= BP.laptop)   return "laptop";
-        if (w <= BP.desktop)  return "desktop";
-        if (w <= BP.tv)       return "tv";
-        return "tv_4k";
+      function categoryOf(dt) {
+        if (dt.startsWith("mobile")) return "mobile";
+        if (dt.startsWith("tablet")) return "tablet";
+        if (dt === "laptop") return "laptop";
+        if (dt === "desktop") return "desktop";
+        return "tv";
       }
 
-      function getOrientation(w, h) {
-        return w >= h ? "landscape" : "portrait";
+      function setAccentColors(cat) {
+        var c = COLORS[cat];
+        var isDark = document.documentElement.classList.contains("dark");
+        var alpha = isDark ? 0.08 : 0.12;
+        document.body.dataset.category = cat;
+        document.body.style.setProperty("--accent", c.hex);
+        document.body.style.setProperty("--accent-glow",
+          "rgba(" + c.r + "," + c.g + "," + c.b + "," + alpha + ")");
       }
 
-      function buildState() {
-        var w = window.innerWidth;
-        var h = window.innerHeight;
-        var deviceType = detectDeviceType(w);
-        var orientation = getOrientation(w, h);
+      /* ── Flags setup ── */
+      var FLAG_GROUPS = [
+        { label: "Device", keys: ["isMobileS","isMobileM","isMobileL","isMobile","isTabletS","isTabletM","isTabletL","isTablet","isLaptop","isDesktop","isTV","isTV4K"] },
+        { label: "Orientation", keys: ["isPortrait","isLandscape","isMobileVertical","isMobileHorizontal","isTabletVertical","isTabletHorizontal"] },
+      ];
+      var flagEls = {};
+      var container = document.getElementById("flagsContainer");
+      FLAG_GROUPS.forEach(function (group) {
+        var lbl = document.createElement("div");
+        lbl.className = "flags__group-label";
+        lbl.textContent = group.label;
+        container.appendChild(lbl);
+        var grid = document.createElement("div");
+        grid.className = "flags__grid";
+        group.keys.forEach(function (key) {
+          var el = document.createElement("span");
+          el.className = "flag";
+          el.textContent = key;
+          flagEls[key] = el;
+          grid.appendChild(el);
+        });
+        container.appendChild(grid);
+      });
 
-        return {
-          type: "deviceState",
-          deviceType: deviceType,
-          orientation: orientation,
-          width: w,
-          height: h,
-          flags: {
-            isMobileS: deviceType === "mobile_s",
-            isMobileM: deviceType === "mobile_m",
-            isMobileL: deviceType === "mobile_l",
-            isMobile: deviceType.startsWith("mobile"),
-            isTabletS: deviceType === "tablet_s",
-            isTabletM: deviceType === "tablet_m",
-            isTabletL: deviceType === "tablet_l",
-            isTablet: deviceType.startsWith("tablet"),
-            isLaptop: deviceType === "laptop",
-            isDesktop: deviceType === "desktop",
-            isTV: deviceType === "tv" || deviceType === "tv_4k",
-            isTV4K: deviceType === "tv_4k",
-            isPortrait: orientation === "portrait",
-            isLandscape: orientation === "landscape",
+      /* ── Scale ── */
+      var scaleSegs = document.querySelectorAll(".scale__seg");
+
+      /* ── DOM refs ── */
+      var elType = document.getElementById("deviceType");
+      var elDims = document.getElementById("dims");
+      var elOrient = document.getElementById("orient");
+      var elTouch = document.getElementById("touch");
+
+      /* ── UA Simulation ── */
+      var uaSim = params.get("ua");
+      if (uaSim === "mobile") {
+        Object.defineProperty(navigator, "userAgent", {
+          get: function () {
+            return "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
           },
-        };
+          configurable: true,
+        });
+        Object.defineProperty(navigator, "maxTouchPoints", {
+          get: function () { return 5; },
+          configurable: true,
+        });
+      } else if (uaSim === "tablet") {
+        Object.defineProperty(navigator, "userAgent", {
+          get: function () {
+            return "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15";
+          },
+          configurable: true,
+        });
+        Object.defineProperty(navigator, "maxTouchPoints", {
+          get: function () { return 5; },
+          configurable: true,
+        });
       }
 
-      function postState() {
+      /* ── Init detector ── */
+      var detector = DeviceTypeDetection.createDeviceDetector();
+      var lastState = null;
+
+      function update(state) {
+        lastState = state;
+
+        /* Hero */
+        if (elType.textContent !== state.deviceType) {
+          elType.textContent = state.deviceType;
+          elType.style.animation = "none";
+          void elType.offsetHeight; /* reflow */
+          elType.style.animation = "";
+        }
+        elDims.textContent = state.width + " \u00d7 " + state.height;
+        elOrient.textContent = state.orientation;
+        elTouch.textContent = state.touchDevice ? "touch" : "no touch";
+
+        /* Accent color */
+        setAccentColors(categoryOf(state.deviceType));
+
+        /* Scale */
+        scaleSegs.forEach(function (seg) {
+          seg.classList.toggle("scale__seg--active", seg.dataset.type === state.deviceType);
+        });
+
+        /* Flags */
+        Object.keys(flagEls).forEach(function (key) {
+          flagEls[key].classList.toggle("flag--on", !!state[key]);
+        });
+
+        /* Post to parent */
         try {
-          window.parent.postMessage(buildState(), "*");
-        } catch (_) {
-          // silently ignore if no parent
-        }
+          window.parent.postMessage({
+            type: "deviceState",
+            deviceType: state.deviceType,
+            orientation: state.orientation,
+            width: state.width,
+            height: state.height,
+            flags: {
+              isMobileS: state.isMobileS,
+              isMobileM: state.isMobileM,
+              isMobileL: state.isMobileL,
+              isMobile: state.isMobile,
+              isTabletS: state.isTabletS,
+              isTabletM: state.isTabletM,
+              isTabletL: state.isTabletL,
+              isTablet: state.isTablet,
+              isLaptop: state.isLaptop,
+              isDesktop: state.isDesktop,
+              isTV: state.isTV,
+              isTV4K: state.isTV4K,
+              isPortrait: state.isPortrait,
+              isLandscape: state.isLandscape,
+              isMobileVertical: state.isMobileVertical,
+              isMobileHorizontal: state.isMobileHorizontal,
+              isTabletVertical: state.isTabletVertical,
+              isTabletHorizontal: state.isTabletHorizontal,
+            },
+          }, "*");
+        } catch (_) {}
       }
 
-      // Throttle helper (leading + trailing edge)
-      var throttleTimer = null;
-      var pending = false;
-
-      function throttledPost() {
-        if (throttleTimer) {
-          pending = true;
-          return;
-        }
-        postState();
-        throttleTimer = setTimeout(function () {
-          throttleTimer = null;
-          if (pending) {
-            pending = false;
-            postState();
-          }
-        }, 150);
-      }
-
-      // Listen for resize
-      window.addEventListener("resize", throttledPost);
-
-      // Listen for orientation change
-      if (screen.orientation) {
-        screen.orientation.addEventListener("change", throttledPost);
-      } else {
-        window.addEventListener("orientationchange", throttledPost);
-      }
-
-      // Initial post
-      postState();
+      detector.subscribe(function (state) { update(state); });
+      update(detector.getState());
     })();
   </script>
 </body>

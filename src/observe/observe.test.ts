@@ -137,4 +137,141 @@ describe("createObserver", () => {
     expect(observer).toHaveProperty("destroy");
     observer.destroy();
   });
+
+  it("calls onUpdate on screen.orientation change", () => {
+    const now = Date.now;
+    Date.now = () => 1000;
+
+    // Force setTimeout fallback for deferred notify
+    const origRAF = globalThis.requestAnimationFrame;
+    (globalThis as any).requestAnimationFrame = undefined;
+
+    const listeners: Record<string, Set<() => void>> = {};
+    const mockOrientation = {
+      addEventListener: (type: string, handler: () => void) => {
+        if (!listeners[type]) listeners[type] = new Set();
+        listeners[type].add(handler);
+      },
+      removeEventListener: (type: string, handler: () => void) => {
+        listeners[type]?.delete(handler);
+      },
+    };
+    const origOrientation = Object.getOwnPropertyDescriptor(
+      screen,
+      "orientation",
+    );
+    Object.defineProperty(screen, "orientation", {
+      configurable: true,
+      value: mockOrientation,
+    });
+
+    const onUpdate = jest.fn();
+    setWindowSize(600, 800);
+    const observer = createObserver(onUpdate, 0);
+
+    Date.now = () => 2000;
+    setWindowSize(800, 600);
+    listeners["change"]?.forEach((fn) => fn());
+    jest.advanceTimersByTime(100);
+
+    expect(onUpdate).toHaveBeenCalledWith(800, 600);
+
+    observer.destroy();
+    expect(listeners["change"]?.size ?? 0).toBe(0);
+
+    if (origOrientation) {
+      Object.defineProperty(screen, "orientation", origOrientation);
+    } else {
+      delete (screen as any).orientation;
+    }
+    globalThis.requestAnimationFrame = origRAF;
+    Date.now = now;
+  });
+
+  it("falls back to window orientationchange when screen.orientation is unavailable", () => {
+    const now = Date.now;
+    Date.now = () => 1000;
+
+    const origRAF = globalThis.requestAnimationFrame;
+    (globalThis as any).requestAnimationFrame = undefined;
+
+    const origOrientation = Object.getOwnPropertyDescriptor(
+      screen,
+      "orientation",
+    );
+    Object.defineProperty(screen, "orientation", {
+      configurable: true,
+      value: undefined,
+    });
+
+    const onUpdate = jest.fn();
+    setWindowSize(600, 800);
+    const observer = createObserver(onUpdate, 0);
+
+    Date.now = () => 2000;
+    setWindowSize(800, 600);
+    window.dispatchEvent(new Event("orientationchange"));
+    jest.advanceTimersByTime(100);
+
+    expect(onUpdate).toHaveBeenCalledWith(800, 600);
+
+    observer.destroy();
+
+    // Verify cleanup: dispatch again, should not notify
+    onUpdate.mockClear();
+    Date.now = () => 3000;
+    window.dispatchEvent(new Event("orientationchange"));
+    jest.advanceTimersByTime(100);
+    expect(onUpdate).not.toHaveBeenCalled();
+
+    if (origOrientation) {
+      Object.defineProperty(screen, "orientation", origOrientation);
+    } else {
+      delete (screen as any).orientation;
+    }
+    globalThis.requestAnimationFrame = origRAF;
+    Date.now = now;
+  });
+
+  it("registers matchMedia orientation query listener", () => {
+    const now = Date.now;
+    Date.now = () => 1000;
+
+    const origRAF = globalThis.requestAnimationFrame;
+    (globalThis as any).requestAnimationFrame = undefined;
+
+    const handlers: Map<string, () => void> = new Map();
+    const origMatchMedia = window.matchMedia;
+    (window as any).matchMedia = (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: (_: string, handler: () => void) => {
+        handlers.set(query, handler);
+      },
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    });
+
+    const onUpdate = jest.fn();
+    setWindowSize(600, 800);
+    const observer = createObserver(onUpdate, 0);
+
+    const orientationHandler = handlers.get("(orientation: portrait)");
+    expect(orientationHandler).toBeDefined();
+
+    Date.now = () => 2000;
+    setWindowSize(800, 600);
+    orientationHandler!();
+    jest.advanceTimersByTime(100);
+
+    expect(onUpdate).toHaveBeenCalledWith(800, 600);
+
+    observer.destroy();
+    (window as any).matchMedia = origMatchMedia;
+    globalThis.requestAnimationFrame = origRAF;
+    Date.now = now;
+  });
 });

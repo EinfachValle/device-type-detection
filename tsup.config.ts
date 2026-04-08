@@ -1,10 +1,19 @@
 import { defineConfig } from "tsup";
 
-export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["esm", "cjs"],
-  dts: true,
-  outDir: "dist",
-  clean: true,
-  splitting: false,
-});
+export default defineConfig([
+  {
+    entry: ["src/index.ts"],
+    format: ["esm", "cjs"],
+    dts: true,
+    outDir: "dist",
+    clean: true,
+    splitting: false,
+  },
+  {
+    entry: ["src/index.ts"],
+    format: ["iife"],
+    outDir: "playground/public",
+    globalName: "DeviceTypeDetection",
+    splitting: false,
+  },
+]);

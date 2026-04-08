@@ -1,40 +1,42 @@
+import {
+  DEFAULT_SSR_DEVICE_TYPE,
+  DESKTOP,
+  LAPTOP,
+  MOBILE_L,
+  MOBILE_M,
+  MOBILE_S,
+  ORIENTATION_LANDSCAPE,
+  ORIENTATION_PORTRAIT,
+  SSR_DIMENSIONS,
+  TABLET_L,
+  TABLET_M,
+  TABLET_S,
+  TV,
+  TV_4K,
+} from "../constants";
 import type { DeviceCategory, DeviceState, Orientation } from "../types";
-
-const SSR_DIMENSIONS: Record<
-  DeviceCategory,
-  { width: number; height: number }
-> = {
-  mobile_s: { width: 320, height: 568 },
-  mobile_m: { width: 375, height: 667 },
-  mobile_l: { width: 428, height: 926 },
-  tablet_s: { width: 768, height: 1024 },
-  tablet_m: { width: 834, height: 1194 },
-  tablet_l: { width: 1024, height: 1366 },
-  laptop: { width: 1366, height: 768 },
-  desktop: { width: 1920, height: 1080 },
-  tv: { width: 2560, height: 1440 },
-  tv_4k: { width: 3840, height: 2160 },
-};
 
 export function isSSR(): boolean {
   return typeof window === "undefined";
 }
 
 export function getSSRDefaults(
-  deviceType: DeviceCategory = "desktop",
+  deviceType: DeviceCategory = DEFAULT_SSR_DEVICE_TYPE,
 ): DeviceState {
-  const isMobileS = deviceType === "mobile_s";
-  const isMobileM = deviceType === "mobile_m";
-  const isMobileL = deviceType === "mobile_l";
-  const isTabletS = deviceType === "tablet_s";
-  const isTabletM = deviceType === "tablet_m";
-  const isTabletL = deviceType === "tablet_l";
+  const isMobileS = deviceType === MOBILE_S;
+  const isMobileM = deviceType === MOBILE_M;
+  const isMobileL = deviceType === MOBILE_L;
+  const isTabletS = deviceType === TABLET_S;
+  const isTabletM = deviceType === TABLET_M;
+  const isTabletL = deviceType === TABLET_L;
   const isMobile = isMobileS || isMobileM || isMobileL;
   const isTablet = isTabletS || isTabletM || isTabletL;
 
   const { width, height } = SSR_DIMENSIONS[deviceType];
   const isPortrait = height > width;
-  const orientation: Orientation = isPortrait ? "portrait" : "landscape";
+  const orientation: Orientation = isPortrait
+    ? ORIENTATION_PORTRAIT
+    : ORIENTATION_LANDSCAPE;
 
   return {
     deviceType,
@@ -50,10 +52,10 @@ export function getSSRDefaults(
     isTabletS,
     isTabletM,
     isTabletL,
-    isLaptop: deviceType === "laptop",
-    isDesktop: deviceType === "desktop",
-    isTV: deviceType === "tv",
-    isTV4K: deviceType === "tv_4k",
+    isLaptop: deviceType === LAPTOP,
+    isDesktop: deviceType === DESKTOP,
+    isTV: deviceType === TV,
+    isTV4K: deviceType === TV_4K,
     isPortrait,
     isLandscape: !isPortrait,
     isMobileVertical: isMobile && isPortrait,

@@ -1,3 +1,17 @@
+import {
+  DESKTOP,
+  LAPTOP,
+  MOBILE_L,
+  MOBILE_M,
+  MOBILE_S,
+  ORIENTATION_LANDSCAPE,
+  ORIENTATION_PORTRAIT,
+  TABLET_L,
+  TABLET_M,
+  TABLET_S,
+  TV,
+  TV_4K,
+} from "../constants";
 import type {
   BreakpointConfig,
   DeviceCategory,
@@ -27,65 +41,67 @@ export function detectDeviceType(input: DetectionInput): DeviceState {
   } = input;
 
   const isPortrait = height > width;
-  const orientation: Orientation = isPortrait ? "portrait" : "landscape";
+  const orientation: Orientation = isPortrait
+    ? ORIENTATION_PORTRAIT
+    : ORIENTATION_LANDSCAPE;
 
   let deviceType: DeviceCategory;
 
   // 1. UA mobile + touch + not iPad
   if (uaMobile && touchCapable && !uaIPad) {
     if (width <= breakpoints.mobileS) {
-      deviceType = "mobile_s";
+      deviceType = MOBILE_S;
     } else if (width <= breakpoints.mobileM) {
-      deviceType = "mobile_m";
+      deviceType = MOBILE_M;
     } else {
-      deviceType = "mobile_l";
+      deviceType = MOBILE_L;
     }
   }
   // 2. UA tablet or iPad + touch
   else if ((uaTablet || uaIPad) && touchCapable) {
     if (width <= breakpoints.tabletS) {
-      deviceType = "tablet_s";
+      deviceType = TABLET_S;
     } else if (width <= breakpoints.tabletM) {
-      deviceType = "tablet_m";
+      deviceType = TABLET_M;
     } else {
-      deviceType = "tablet_l";
+      deviceType = TABLET_L;
     }
   }
   // 3. Viewport cascade
   else {
     if (width > breakpoints.tv) {
-      deviceType = "tv_4k";
+      deviceType = TV_4K;
     } else if (width > breakpoints.desktop) {
-      deviceType = "tv";
+      deviceType = TV;
     } else if (width > breakpoints.laptop) {
-      deviceType = "desktop";
+      deviceType = DESKTOP;
     } else if (width > breakpoints.tabletL) {
-      deviceType = "laptop";
+      deviceType = LAPTOP;
     } else if (width > breakpoints.tabletM) {
-      deviceType = "tablet_l";
+      deviceType = TABLET_L;
     } else if (width > breakpoints.tabletS) {
-      deviceType = "tablet_m";
+      deviceType = TABLET_M;
     } else if (width > breakpoints.mobileM) {
-      deviceType = "tablet_s";
+      deviceType = TABLET_S;
     } else if (width > breakpoints.mobileS) {
-      deviceType = "mobile_m";
+      deviceType = MOBILE_M;
     } else {
-      deviceType = "mobile_s";
+      deviceType = MOBILE_S;
     }
   }
 
-  const isMobileS = deviceType === "mobile_s";
-  const isMobileM = deviceType === "mobile_m";
-  const isMobileL = deviceType === "mobile_l";
-  const isTabletS = deviceType === "tablet_s";
-  const isTabletM = deviceType === "tablet_m";
-  const isTabletL = deviceType === "tablet_l";
+  const isMobileS = deviceType === MOBILE_S;
+  const isMobileM = deviceType === MOBILE_M;
+  const isMobileL = deviceType === MOBILE_L;
+  const isTabletS = deviceType === TABLET_S;
+  const isTabletM = deviceType === TABLET_M;
+  const isTabletL = deviceType === TABLET_L;
   const isMobile = isMobileS || isMobileM || isMobileL;
   const isTablet = isTabletS || isTabletM || isTabletL;
-  const isLaptop = deviceType === "laptop";
-  const isDesktop = deviceType === "desktop";
-  const isTV = deviceType === "tv";
-  const isTV4K = deviceType === "tv_4k";
+  const isLaptop = deviceType === LAPTOP;
+  const isDesktop = deviceType === DESKTOP;
+  const isTV = deviceType === TV;
+  const isTV4K = deviceType === TV_4K;
 
   return {
     deviceType,
