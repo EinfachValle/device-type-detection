@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.1.0] - 2026-04-08
+
+### Added
+
+- `src/constants/` module — all device type strings, orientations, and defaults as exported constants (no more magic strings)
+- Exported constants: `MOBILE_S`, `MOBILE_M`, ..., `TV_4K`, `DEVICE_CATEGORIES`, `ORIENTATION_PORTRAIT`, `ORIENTATION_LANDSCAPE`, `DEFAULT_THROTTLE_MS`, `DEFAULT_SSR_DEVICE_TYPE`, `SSR_DIMENSIONS`
+- `notifyDeferred()` in observe layer — uses `requestAnimationFrame` to wait for dimensions after orientation change
+- Legacy `orientationchange` event fallback when `screen.orientation` API is unavailable
+- `matchMedia("(orientation: portrait)")` listener for reliable cross-browser orientation detection
+- IIFE build output (`playground/public/index.global.js`) exposing `DeviceTypeDetection` global
+- Playground: redesigned with landing page, integration dialog, PWA manifest, and new device presets
+- Constants test suite (70 specs)
+- Orientation observer tests (3 new specs)
+
+### Changed
+
+- All source modules now import device type strings from `src/constants/` instead of using string literals
+- Observe layer uses `DEFAULT_BREAKPOINTS` values instead of hardcoded breakpoint array
+- `create-detector` imports `DEFAULT_THROTTLE_MS` and `DEFAULT_SSR_DEVICE_TYPE` from constants
+- `tsup.config.ts` extended with IIFE build configuration
+
 ## [2.0.0] - 2026-04-07
 
 ### Added
