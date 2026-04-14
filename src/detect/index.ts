@@ -81,10 +81,8 @@ export function detectDeviceType(input: DetectionInput): DeviceState {
   else {
     if (width > breakpoints.laptop) {
       deviceType = DESKTOP;
-    } else if (width > breakpoints.tabletL) {
-      deviceType = LAPTOP;
     } else if (width > breakpoints.tabletM) {
-      deviceType = TABLET_L;
+      deviceType = LAPTOP;
     } else if (width > breakpoints.tabletS) {
       deviceType = TABLET_M;
     } else if (width > breakpoints.mobileM) {

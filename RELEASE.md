@@ -1,56 +1,35 @@
-# v2.1.1 — TV detection via User-Agent, playground fixes
+# v2.1.3 — Viewport cascade hotfix
 
 ## Highlights
 
-- **TV detection via UA** — Smart TVs (Tizen, WebOS, FireTV, Roku, etc.) are now detected by User-Agent, not viewport width
-- **WQHD/4K = desktop** — viewport-only fallback maxes out at "desktop", no false "tv" classification
-- **Playground fixes** — resize updates detection in real-time, auto-scaling, smooth drag, correct defaults
+- **Laptop-Viewports korrekt** — 1025–1366px gibt jetzt `laptop` statt `tablet_l` zurück, wenn kein Tablet-UA erkannt wird
+- **`isTablet` nur für echte Tablets** — `tablet_l` wird nur noch über UA-basierte Erkennung (Branch 2) zugewiesen
+- **TypeScript IDE-Fix** — `describe`/`it` Typen in Test-Dateien werden korrekt aufgelöst
 
-## Breaking Change from 2.1.0
+## Bug
 
-The viewport-only detection cascade no longer returns `tv` or `tv_4k`. These device types are now **only reachable via Smart TV User-Agent**. If you relied on `isTV` or `isTV4K` being `true` for wide desktop monitors, they will now be `isDesktop: true`.
+Der Viewport-Cascade (Branch 4 in `detectDeviceType()`) wurde nur erreicht wenn die UA **nicht** mobile, tablet oder TV war — also bei Desktop-Browsern. Trotzdem klassifizierte der Cascade 1025–1366px als `TABLET_L`, was `isTablet = true` setzte.
 
-### Before (2.1.0)
+### Vorher (2.1.2)
 
-```text
-2560px desktop monitor → deviceType: "tv"     ← wrong
-3840px 4K monitor      → deviceType: "tv"     ← wrong
-```
+| Viewport | UA             | deviceType | isTablet        |
+| -------- | -------------- | ---------- | --------------- |
+| 1280px   | Desktop Chrome | `tablet_l` | `true` ← falsch |
+| 1366px   | Desktop Chrome | `tablet_l` | `true` ← falsch |
 
-### After (2.1.1)
+### Nachher (2.1.3)
 
-```text
-2560px desktop monitor → deviceType: "desktop" ← correct
-3840px 4K monitor      → deviceType: "desktop" ← correct
-Samsung Tizen TV       → deviceType: "tv"      ← correct (via UA)
-```
+| Viewport | UA             | deviceType | isTablet | isLaptop  |
+| -------- | -------------- | ---------- | -------- | --------- |
+| 1280px   | Desktop Chrome | `laptop`   | `false`  | `true` ✓  |
+| 1366px   | Desktop Chrome | `laptop`   | `false`  | `true` ✓  |
+| 1024px   | iPad (UA)      | `tablet_m` | `true`   | `false` ✓ |
 
-## New API Fields
-
-`parseUserAgent()` now returns `isTV: boolean`:
-
-```typescript
-const ua = parseUserAgent(navigator.userAgent, navigator.maxTouchPoints);
-// ua.isTV — true for Smart TV browsers (Tizen, WebOS, FireTV, Roku, etc.)
-```
-
-`detectDeviceType()` accepts `uaTV: boolean`:
-
-```typescript
-const state = detectDeviceType({
-  width: 1920,
-  height: 1080,
-  uaTV: true, // ← new
-  // ... other fields
-});
-// state.deviceType === "tv"
-```
-
-## Detection Cascade
+## Detection Cascade (unchanged)
 
 ```text
 1. UA mobile + touch + !iPad  → mobile_s / mobile_m / mobile_l
 2. UA tablet/iPad + touch     → tablet_s / tablet_m / tablet_l
-3. UA TV                      → tv / tv_4k                      ← NEW
-4. Viewport-only              → mobile_s ... desktop (max)       ← CHANGED
+3. UA TV                      → tv / tv_4k
+4. Viewport-only              → mobile_s ... laptop ... desktop (max)  ← FIXED
 ```

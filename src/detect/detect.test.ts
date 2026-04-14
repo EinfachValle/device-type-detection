@@ -313,14 +313,25 @@ describe("detectDeviceType", () => {
       expect(state.deviceType).toBe("tablet_m");
     });
 
-    it("width 1025 -> tablet_l", () => {
+    it("width 1025 -> laptop", () => {
       const state = detect({ width: 1025, height: 768 });
-      expect(state.deviceType).toBe("tablet_l");
+      expect(state.deviceType).toBe("laptop");
+      expect(state.isLaptop).toBe(true);
+      expect(state.isTablet).toBe(false);
     });
 
-    it("width 1366 -> tablet_l", () => {
+    it("width 1280 (common laptop) -> laptop, not tablet", () => {
+      const state = detect({ width: 1280, height: 720 });
+      expect(state.deviceType).toBe("laptop");
+      expect(state.isLaptop).toBe(true);
+      expect(state.isTablet).toBe(false);
+    });
+
+    it("width 1366 -> laptop", () => {
       const state = detect({ width: 1366, height: 768 });
-      expect(state.deviceType).toBe("tablet_l");
+      expect(state.deviceType).toBe("laptop");
+      expect(state.isLaptop).toBe(true);
+      expect(state.isTablet).toBe(false);
     });
 
     it("width 1367 -> laptop", () => {
@@ -402,8 +413,7 @@ describe("detectDeviceType", () => {
       [380, "mobile_s", "mobile_m"],
       [480, "mobile_m", "tablet_s"],
       [834, "tablet_s", "tablet_m"],
-      [1024, "tablet_m", "tablet_l"],
-      [1366, "tablet_l", "laptop"],
+      [1024, "tablet_m", "laptop"],
       [1400, "laptop", "desktop"],
     ];
 

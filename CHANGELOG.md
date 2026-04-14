@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.1.3] - 2026-04-14
+
+### Fixed
+
+- Viewport cascade (branch 4) no longer classifies desktop browsers at 1025–1366px as `tablet_l` — common laptop resolutions (1280×720, 1366×768) now correctly return `laptop` with `isLaptop: true` and `isTablet: false`
+- `tablet_l` is now exclusively assigned via UA-based tablet detection (branch 2), not by viewport width alone
+
+### Added
+
+- `.npmrc` with `access=public` and explicit registry URL
+- `"types": ["jest", "node"]` in `tsconfig.json` to resolve `describe`/`it` type errors in IDE
+
+### Changed
+
+- Viewport cascade boundary at 1024px now transitions directly from `tablet_m` to `laptop` (previously went through `tablet_l`)
+- Unit tests updated: 3 viewport cascade assertions changed, 1 boundary removed, 1 new regression test for 1280px
+
 ## [2.1.1] - 2026-04-08
 
 ### Fixed
